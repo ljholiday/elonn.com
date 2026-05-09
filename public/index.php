@@ -22,6 +22,8 @@ spl_autoload_register(static function (string $class): void {
     }
 });
 
+redirectToHttps();
+
 $env = loadEnv(BASE_PATH . '/config/.env');
 $apiBaseUrl = envValue($env, 'ELONN_API_BASE_URL') ?? defaultApiBaseUrl();
 $cookieDomain = envValue($env, 'ELONN_COOKIE_DOMAIN') ?? defaultCookieDomain();
@@ -38,10 +40,13 @@ $router->get('/', static function () use ($api, $worldUrl): void {
 });
 
 $router->get('/account/login', static function () use ($api, $worldUrl): void {
+    $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
+
     renderPage('Log in', 'account/login.php', [
         'identity' => currentIdentity($api),
         'worldUrl' => $worldUrl,
         'error' => errorMessage($_GET['error'] ?? null),
+        'return_to' => $returnTo,
         'old' => [],
     ]);
 });
@@ -49,12 +54,14 @@ $router->get('/account/login', static function () use ($api, $worldUrl): void {
 $router->post('/account/login', static function () use ($api, $cookieDomain): void {
     $email = normalizeEmail($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
+    $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
 
     if ($email === null || $password === '') {
         renderPage('Log in', 'account/login.php', [
             'identity' => null,
             'worldUrl' => defaultWorldUrl(),
             'error' => 'Email and password are required.',
+            'return_to' => $returnTo,
             'old' => formOld(['email']),
         ], 400);
         return;
@@ -66,20 +73,24 @@ $router->post('/account/login', static function () use ($api, $cookieDomain): vo
             'identity' => null,
             'worldUrl' => defaultWorldUrl(),
             'error' => 'Invalid email or password.',
+            'return_to' => $returnTo,
             'old' => formOld(['email']),
         ], 401);
         return;
     }
 
     setAuthCookie($result['token'], $result['expires_at'], $cookieDomain);
-    Response::redirect('/account');
+    Response::redirect($returnTo ?? '/account');
 });
 
 $router->get('/account/register', static function () use ($api, $worldUrl): void {
+    $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
+
     renderPage('Create account', 'account/register.php', [
         'identity' => currentIdentity($api),
         'worldUrl' => $worldUrl,
         'error' => errorMessage($_GET['error'] ?? null),
+        'return_to' => $returnTo,
         'old' => [],
     ]);
 });
@@ -88,12 +99,14 @@ $router->post('/account/register', static function () use ($api, $cookieDomain):
     $email = normalizeEmail($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
     $displayName = cleanOptionalString($_POST['display_name'] ?? null);
+    $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
 
     if ($email === null || $password === '') {
         renderPage('Create account', 'account/register.php', [
             'identity' => null,
             'worldUrl' => defaultWorldUrl(),
             'error' => 'Email and password are required.',
+            'return_to' => $returnTo,
             'old' => formOld(['display_name', 'email']),
         ], 400);
         return;
@@ -105,6 +118,7 @@ $router->post('/account/register', static function () use ($api, $cookieDomain):
             'identity' => null,
             'worldUrl' => defaultWorldUrl(),
             'error' => $register['status'] === 409 ? 'An account already exists for that email.' : 'Unable to create account.',
+            'return_to' => $returnTo,
             'old' => formOld(['display_name', 'email']),
         ], $register['status'] === 409 ? 409 : 500);
         return;
@@ -117,7 +131,7 @@ $router->post('/account/register', static function () use ($api, $cookieDomain):
     }
 
     setAuthCookie($login['token'], $login['expires_at'], $cookieDomain);
-    Response::redirect('/account');
+    Response::redirect($returnTo ?? '/account');
 });
 
 $router->get('/account', static function () use ($api, $worldUrl): void {
@@ -189,7 +203,7 @@ function loadEnv(string $path): array
 function defaultApiBaseUrl(): string
 {
     return str_contains((string) ($_SERVER['HTTP_HOST'] ?? ''), 'elonn.local')
-        ? 'http://api.elonn.local'
+        ? 'https://api.elonn.local'
         : 'https://api.elonn.com';
 }
 
@@ -212,7 +226,7 @@ function defaultCookieDomain(): string
 function defaultWorldUrl(): string
 {
     return str_contains((string) ($_SERVER['HTTP_HOST'] ?? ''), 'elonn.local')
-        ? 'http://world.elonn.local/world'
+        ? 'https://world.elonn.local/world'
         : 'https://world.elonn.com/world';
 }
 
@@ -295,10 +309,61 @@ function clearAuthCookie(string $domain): void
     ]);
 }
 
+function allowedReturnTo(mixed $value): ?string
+{
+    if (!is_string($value) || trim($value) === '') {
+        return null;
+    }
+
+    $value = trim($value);
+    if (str_starts_with($value, '/')) {
+        return $value;
+    }
+
+    $parts = parse_url($value);
+    if (!is_array($parts)) {
+        return null;
+    }
+
+    $scheme = strtolower((string) ($parts['scheme'] ?? ''));
+    $host = strtolower((string) ($parts['host'] ?? ''));
+    if (!in_array($scheme, ['http', 'https'], true)) {
+        return null;
+    }
+
+    return in_array($host, [
+        'elonn.local',
+        'api.elonn.local',
+        'time.elonn.local',
+        'world.elonn.local',
+        'elonn.com',
+        'api.elonn.com',
+        'time.elonn.com',
+        'world.elonn.com',
+    ], true) ? $value : null;
+}
+
 function isHttps(): bool
 {
     return ($_SERVER['HTTPS'] ?? '') === 'on'
         || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+}
+
+function redirectToHttps(): void
+{
+    if (isHttps()) {
+        return;
+    }
+
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    if (!is_string($host) || $host === '') {
+        return;
+    }
+
+    $uri = $_SERVER['REQUEST_URI'] ?? '/';
+    http_response_code(308);
+    header('Location: https://' . $host . (is_string($uri) ? $uri : '/'));
+    exit;
 }
 
 function errorMessage(mixed $error): ?string
