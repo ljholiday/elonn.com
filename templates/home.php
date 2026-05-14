@@ -19,7 +19,7 @@ $error = $data['error'] ?? null;
                     <a class="button" href="/account/register" data-auth-open="register">Create account</a>
                     <a class="button" href="/account/login" data-auth-open="login">Log in</a>
                 <?php else: ?>
-                    <a class="button" href="/account">Account</a>
+                    <a class="button" href="/start">Start</a>
                 <?php endif; ?>
             </div>
         </div>

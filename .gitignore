@@ -1,3 +1,5 @@
-config/.env
+.env
+composer.phar
+node_modules/
 *.swp
 .*.swp

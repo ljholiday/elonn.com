@@ -6,28 +6,20 @@ use Elonn\Site\ApiClient;
 use Elonn\Site\Response;
 use Elonn\Site\Router;
 use Elonn\Site\View;
+use Dotenv\Dotenv;
 
 define('BASE_PATH', dirname(__DIR__));
 
-spl_autoload_register(static function (string $class): void {
-    $prefix = 'Elonn\\Site\\';
-    if (!str_starts_with($class, $prefix)) {
-        return;
-    }
+require BASE_PATH . '/vendor/autoload.php';
 
-    $relativeClass = substr($class, strlen($prefix));
-    $path = BASE_PATH . '/src/' . str_replace('\\', '/', $relativeClass) . '.php';
-    if (is_file($path)) {
-        require $path;
-    }
-});
+Dotenv::createImmutable(BASE_PATH)->safeLoad();
+$config = require BASE_PATH . '/config/config.php';
 
 redirectToHttps();
 
-$env = loadEnv(BASE_PATH . '/config/.env');
-$apiBaseUrl = envValue($env, 'ELONN_API_BASE_URL') ?? defaultApiBaseUrl();
-$cookieDomain = envValue($env, 'ELONN_COOKIE_DOMAIN') ?? defaultCookieDomain();
-$worldUrl = envValue($env, 'ELONN_WORLD_URL') ?? defaultWorldUrl();
+$apiBaseUrl = $config['services']['api_base_url'];
+$cookieDomain = $config['auth']['cookie_domain'];
+$worldUrl = $config['products']['world_url'];
 $api = new ApiClient($apiBaseUrl);
 $router = new Router();
 
@@ -41,9 +33,14 @@ $router->get('/', static function () use ($api, $worldUrl): void {
 
 $router->get('/account/login', static function () use ($api, $worldUrl): void {
     $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
+    $identity = currentIdentity($api);
+    if ($identity !== null) {
+        Response::redirect($returnTo ?? '/start');
+        return;
+    }
 
     renderPage('Log in', 'account/login.php', [
-        'identity' => currentIdentity($api),
+        'identity' => null,
         'worldUrl' => $worldUrl,
         'error' => errorMessage($_GET['error'] ?? null),
         'return_to' => $returnTo,
@@ -51,7 +48,7 @@ $router->get('/account/login', static function () use ($api, $worldUrl): void {
     ]);
 });
 
-$router->post('/account/login', static function () use ($api, $cookieDomain): void {
+$router->post('/account/login', static function () use ($api, $cookieDomain, $worldUrl): void {
     $email = normalizeEmail($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
     $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
@@ -59,7 +56,7 @@ $router->post('/account/login', static function () use ($api, $cookieDomain): vo
     if ($email === null || $password === '') {
         renderPage('Log in', 'account/login.php', [
             'identity' => null,
-            'worldUrl' => defaultWorldUrl(),
+            'worldUrl' => $worldUrl,
             'error' => 'Email and password are required.',
             'return_to' => $returnTo,
             'old' => formOld(['email']),
@@ -71,7 +68,7 @@ $router->post('/account/login', static function () use ($api, $cookieDomain): vo
     if (!$result['ok'] || !isset($result['token'], $result['expires_at'])) {
         renderPage('Log in', 'account/login.php', [
             'identity' => null,
-            'worldUrl' => defaultWorldUrl(),
+            'worldUrl' => $worldUrl,
             'error' => 'Invalid email or password.',
             'return_to' => $returnTo,
             'old' => formOld(['email']),
@@ -80,14 +77,19 @@ $router->post('/account/login', static function () use ($api, $cookieDomain): vo
     }
 
     setAuthCookie($result['token'], $result['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? '/account');
+    Response::redirect($returnTo ?? '/start');
 });
 
 $router->get('/account/register', static function () use ($api, $worldUrl): void {
     $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
+    $identity = currentIdentity($api);
+    if ($identity !== null) {
+        Response::redirect($returnTo ?? '/start');
+        return;
+    }
 
     renderPage('Create account', 'account/register.php', [
-        'identity' => currentIdentity($api),
+        'identity' => null,
         'worldUrl' => $worldUrl,
         'error' => errorMessage($_GET['error'] ?? null),
         'return_to' => $returnTo,
@@ -95,7 +97,7 @@ $router->get('/account/register', static function () use ($api, $worldUrl): void
     ]);
 });
 
-$router->post('/account/register', static function () use ($api, $cookieDomain): void {
+$router->post('/account/register', static function () use ($api, $cookieDomain, $worldUrl): void {
     $email = normalizeEmail($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
     $displayName = cleanOptionalString($_POST['display_name'] ?? null);
@@ -104,7 +106,7 @@ $router->post('/account/register', static function () use ($api, $cookieDomain):
     if ($email === null || $password === '') {
         renderPage('Create account', 'account/register.php', [
             'identity' => null,
-            'worldUrl' => defaultWorldUrl(),
+            'worldUrl' => $worldUrl,
             'error' => 'Email and password are required.',
             'return_to' => $returnTo,
             'old' => formOld(['display_name', 'email']),
@@ -116,7 +118,7 @@ $router->post('/account/register', static function () use ($api, $cookieDomain):
     if (!$register['ok']) {
         renderPage('Create account', 'account/register.php', [
             'identity' => null,
-            'worldUrl' => defaultWorldUrl(),
+            'worldUrl' => $worldUrl,
             'error' => $register['status'] === 409 ? 'An account already exists for that email.' : 'Unable to create account.',
             'return_to' => $returnTo,
             'old' => formOld(['display_name', 'email']),
@@ -131,7 +133,22 @@ $router->post('/account/register', static function () use ($api, $cookieDomain):
     }
 
     setAuthCookie($login['token'], $login['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? '/account');
+    Response::redirect($returnTo ?? '/start');
+});
+
+$router->get('/start', static function () use ($api, $config, $worldUrl): void {
+    $identity = currentIdentity($api);
+    if ($identity === null) {
+        Response::redirect('/account/login?return_to=' . rawurlencode('/start'));
+        return;
+    }
+
+    renderPage('Elonn Start', 'start.php', [
+        'identity' => $identity,
+        'worldUrl' => $worldUrl,
+        'timeUrl' => productUrl($config, 'time'),
+        'error' => null,
+    ]);
 });
 
 $router->get('/account', static function () use ($api, $worldUrl): void {
@@ -145,6 +162,32 @@ $router->get('/account', static function () use ($api, $worldUrl): void {
         'identity' => $identity,
         'worldUrl' => $worldUrl,
         'error' => null,
+    ]);
+});
+
+$router->get('/privacy', static function () use ($api, $worldUrl): void {
+    renderPage('Privacy', 'legal.php', [
+        'identity' => currentIdentity($api),
+        'worldUrl' => $worldUrl,
+        'heading' => 'Privacy',
+        'body' => [
+            'Elonn uses account information to operate identity, account access, and connected product services.',
+            'Authentication cookies are used to keep you signed in across Elonn services. Do not share account credentials or tokens.',
+            'For privacy questions, contact hello@elonn.com.',
+        ],
+    ]);
+});
+
+$router->get('/terms', static function () use ($api, $worldUrl): void {
+    renderPage('Terms', 'legal.php', [
+        'identity' => currentIdentity($api),
+        'worldUrl' => $worldUrl,
+        'heading' => 'Terms',
+        'body' => [
+            'Use Elonn services responsibly and only with accounts you control.',
+            'Preview services may change as the platform develops. Production services should preserve account and identity boundaries.',
+            'For service questions, contact hello@elonn.com.',
+        ],
     ]);
 });
 
@@ -173,61 +216,19 @@ function renderPage(string $title, string $template, array $data, int $status = 
         'template' => $template,
         'data' => $data,
         'identity' => $data['identity'] ?? null,
-        'worldUrl' => $data['worldUrl'] ?? defaultWorldUrl(),
+        'worldUrl' => $data['worldUrl'] ?? '#',
     ], $status);
 }
 
 /**
- * @return array<string, string>
+ * @param array{products: array<string, string>} $config
  */
-function loadEnv(string $path): array
+function productUrl(array $config, string $product): string
 {
-    if (!is_file($path)) {
-        return [];
-    }
-
-    $values = [];
-    foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {
-        $line = trim($line);
-        if ($line === '' || str_starts_with($line, '#')) {
-            continue;
-        }
-
-        [$key, $value] = array_pad(explode('=', $line, 2), 2, '');
-        $values[trim($key)] = trim($value);
-    }
-
-    return $values;
-}
-
-function defaultApiBaseUrl(): string
-{
-    return str_contains((string) ($_SERVER['HTTP_HOST'] ?? ''), 'elonn.local')
-        ? 'https://api.elonn.local'
-        : 'https://api.elonn.com';
-}
-
-/**
- * @param array<string, string> $env
- */
-function envValue(array $env, string $key): ?string
-{
-    $value = trim($env[$key] ?? '');
-    return $value === '' ? null : $value;
-}
-
-function defaultCookieDomain(): string
-{
-    return str_contains((string) ($_SERVER['HTTP_HOST'] ?? ''), 'elonn.local')
-        ? '.elonn.local'
-        : '.elonn.com';
-}
-
-function defaultWorldUrl(): string
-{
-    return str_contains((string) ($_SERVER['HTTP_HOST'] ?? ''), 'elonn.local')
-        ? 'https://world.elonn.local/world'
-        : 'https://world.elonn.com/world';
+    return match ($product) {
+        'time' => $config['products']['time_url'] ?? '#',
+        default => '#',
+    };
 }
 
 function authToken(): ?string

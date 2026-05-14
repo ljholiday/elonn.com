@@ -31,7 +31,11 @@ The landing page also has progressive-enhancement login and registration modals.
 
 ```text
 config/
-  .env
+  config.php
+.env
+.env.example
+composer.json
+vendor/
 public/
   index.php
   .htaccess
@@ -49,12 +53,16 @@ templates/
 
 ## Configuration
 
-Create `config/.env` for environment-specific values:
+Create `.env` for environment-specific values:
 
 ```env
+APP_ENV=
+APP_DEBUG=
+APP_URL=
 ELONN_API_BASE_URL=
 ELONN_COOKIE_DOMAIN=
 ELONN_WORLD_URL=
+ELONN_TIME_URL=
 ```
 
 Blank values use host-based defaults.
@@ -62,9 +70,10 @@ Blank values use host-based defaults.
 Local defaults:
 
 ```text
-ELONN_API_BASE_URL=http://api.elonn.local
+ELONN_API_BASE_URL=https://api.elonn.local
 ELONN_COOKIE_DOMAIN=.elonn.local
-ELONN_WORLD_URL=http://world.elonn.local/world
+ELONN_WORLD_URL=https://world.elonn.local/world
+ELONN_TIME_URL=https://time.elonn.local/
 ```
 
 Production defaults:
@@ -73,7 +82,10 @@ Production defaults:
 ELONN_API_BASE_URL=https://api.elonn.com
 ELONN_COOKIE_DOMAIN=.elonn.com
 ELONN_WORLD_URL=https://world.elonn.com/world
+ELONN_TIME_URL=https://time.elonn.com/
 ```
+
+`public/index.php` loads `vendor/autoload.php` and `vlucas/phpdotenv`. `config/config.php` is the only layer that reads deployment environment values and returns normalized config arrays to the application.
 
 ## Identity Boundary
 
@@ -97,7 +109,7 @@ Do not add OAuth, MFA, password reset, roles, teams, or third-party app authoriz
 
 - Apache should serve this project through `public/`, or the project-root `.htaccess` should rewrite requests into `public/`.
 - No database migration is required for this app.
-- Production can use explicit `.env` values, but the current code infers `.elonn.com` settings from the host when values are blank.
+- Production should use explicit `.env` values. Host-based defaults are retained as a fallback.
 
 ## Verification
 
