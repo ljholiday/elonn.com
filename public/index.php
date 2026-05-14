@@ -48,7 +48,44 @@ $router->get('/account/login', static function () use ($api, $worldUrl): void {
     ]);
 });
 
+$router->get('/login', static function (): void {
+    $query = $_SERVER['QUERY_STRING'] ?? '';
+    Response::redirect('/account/login' . (is_string($query) && $query !== '' ? '?' . $query : ''));
+});
+
 $router->post('/account/login', static function () use ($api, $cookieDomain, $worldUrl): void {
+    $email = normalizeEmail($_POST['email'] ?? null);
+    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
+    $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
+
+    if ($email === null || $password === '') {
+        renderPage('Log in', 'account/login.php', [
+            'identity' => null,
+            'worldUrl' => $worldUrl,
+            'error' => 'Email and password are required.',
+            'return_to' => $returnTo,
+            'old' => formOld(['email']),
+        ], 400);
+        return;
+    }
+
+    $result = $api->login($email, $password);
+    if (!$result['ok'] || !isset($result['token'], $result['expires_at'])) {
+        renderPage('Log in', 'account/login.php', [
+            'identity' => null,
+            'worldUrl' => $worldUrl,
+            'error' => 'Invalid email or password.',
+            'return_to' => $returnTo,
+            'old' => formOld(['email']),
+        ], 401);
+        return;
+    }
+
+    setAuthCookie($result['token'], $result['expires_at'], $cookieDomain);
+    Response::redirect($returnTo ?? '/start');
+});
+
+$router->post('/login', static function () use ($api, $cookieDomain, $worldUrl): void {
     $email = normalizeEmail($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
     $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
@@ -336,11 +373,15 @@ function allowedReturnTo(mixed $value): ?string
         'elonn.local',
         'api.elonn.local',
         'time.elonn.local',
+        'web.elonn.local',
         'world.elonn.local',
+        'social.elonn.local',
         'elonn.com',
         'api.elonn.com',
         'time.elonn.com',
+        'web.elonn.com',
         'world.elonn.com',
+        'social.elonn.com',
     ], true) ? $value : null;
 }
 

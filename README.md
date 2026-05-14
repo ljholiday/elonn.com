@@ -19,6 +19,8 @@ Current browser routes:
 GET /
 GET /account/login
 POST /account/login
+GET /login
+POST /login
 GET /account/register
 POST /account/register
 GET /account
