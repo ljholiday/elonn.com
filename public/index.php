@@ -376,12 +376,14 @@ function allowedReturnTo(mixed $value): ?string
         'web.elonn.local',
         'world.elonn.local',
         'social.elonn.local',
+        'admin.elonn.local',
         'elonn.com',
         'api.elonn.com',
         'time.elonn.com',
         'web.elonn.com',
         'world.elonn.com',
         'social.elonn.com',
+        'admin.elonn.com',
     ], true) ? $value : null;
 }
 
