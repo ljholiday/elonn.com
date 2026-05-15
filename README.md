@@ -7,7 +7,7 @@ This app owns the customer-facing marketing surface and the browser account expe
 ## Current Purpose
 
 - Present the Elonn marketing/conversion page.
-- Link users into the World experience.
+- Link users into the Web browser runtime.
 - Provide browser-facing account pages for login, registration, account display, and logout.
 - Call `api.elonn.local` or `api.elonn.com` for identity operations.
 
@@ -63,7 +63,7 @@ APP_DEBUG=
 APP_URL=
 ELONN_API_BASE_URL=
 ELONN_COOKIE_DOMAIN=
-ELONN_WORLD_URL=
+ELONN_WEB_URL=
 ELONN_TIME_URL=
 ```
 
@@ -74,7 +74,7 @@ Local defaults:
 ```text
 ELONN_API_BASE_URL=https://api.elonn.local
 ELONN_COOKIE_DOMAIN=.elonn.local
-ELONN_WORLD_URL=https://world.elonn.local/world
+ELONN_WEB_URL=https://web.elonn.local/
 ELONN_TIME_URL=https://time.elonn.local/
 ```
 
@@ -83,7 +83,7 @@ Production defaults:
 ```text
 ELONN_API_BASE_URL=https://api.elonn.com
 ELONN_COOKIE_DOMAIN=.elonn.com
-ELONN_WORLD_URL=https://world.elonn.com/world
+ELONN_WEB_URL=https://web.elonn.com/
 ELONN_TIME_URL=https://time.elonn.com/
 ```
 
@@ -104,8 +104,9 @@ Do not add OAuth, MFA, password reset, roles, teams, or third-party app authoriz
 
 - `api.elonn.local`: shared identity authority.
 - `time.elonn.local`: calendar/time product service.
-- `world.elonn.local`: World demo and product surface.
-- `social.elonara.com`: external Social surface displayed by World.
+- `web.elonn.local`: browser runtime.
+- `world.elonn.local`: Home/world composition service.
+- `social.elonn.local`: native social object service.
 
 ## Deployment Notes
 

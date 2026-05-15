@@ -17,10 +17,7 @@ return [
         'api_base_url' => rtrim(site_string_config('ELONN_API_BASE_URL', $local ? 'https://api.elonn.local' : 'https://api.elonn.com'), '/'),
     ],
     'products' => [
-        'world_url' => site_string_config(
-            'ELONN_WEB_URL',
-            site_string_config('ELONN_WORLD_URL', $local ? 'https://web.elonn.local/' : 'https://web.elonn.com/')
-        ),
+        'world_url' => site_string_config('ELONN_WEB_URL', $local ? 'https://web.elonn.local/' : 'https://web.elonn.com/'),
         'time_url' => site_string_config('ELONN_TIME_URL', $local ? 'https://time.elonn.local/' : 'https://time.elonn.com/'),
     ],
 ];
