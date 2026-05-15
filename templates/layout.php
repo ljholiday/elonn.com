@@ -5,6 +5,9 @@
 /** @var array{id: string, email: string, display_name: string|null}|null $identity */
 /** @var string $worldUrl */
 $currentTemplate = $template;
+$pageDescription = 'Elonn is the new front page for a spatial internet: a world layer for places, tools, and persistent digital presence.';
+$pageUrl = 'https://elonn.com/';
+$shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
 ?>
 <!doctype html>
 <html lang="en">
@@ -12,7 +15,18 @@ $currentTemplate = $template;
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
-    <meta name="description" content="Elonn is the new front page for a spatial internet: a world layer for places, tools, and persistent digital presence.">
+    <meta name="description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:site_name" content="Elonn">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:url" content="<?= htmlspecialchars($pageUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image" content="<?= htmlspecialchars($shareImage, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image:secure_url" content="<?= htmlspecialchars($shareImage, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
+    <meta property="og:image:alt" content="Elonn logo">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LNJE3CGYKC"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
