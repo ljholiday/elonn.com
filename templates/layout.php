@@ -38,7 +38,10 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
 </head>
 <body>
     <header class="site-header" aria-label="Primary">
-        <a class="brand" href="/">Elonn</a>
+        <a class="brand" href="/">
+            <img src="/assets/img/elonn-logo.png" alt="" width="28" height="28">
+            <span>Elonn</span>
+        </a>
         <nav class="nav" aria-label="Primary navigation">
             <?php if ($identity === null): ?>
                 <a href="/account/login" data-auth-open="login">Log in</a>

@@ -47,10 +47,20 @@ a {
 }
 
 .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
     font-size: 1rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+}
+
+.brand img {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
 }
 
 .nav {
