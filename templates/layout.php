@@ -39,7 +39,7 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
 <body>
     <header class="site-header" aria-label="Primary">
         <a class="brand" href="/">
-            <img src="/assets/img/elonn-logo.png" alt="" width="28" height="28">
+            <img src="/assets/img/elonn-logo.png" alt="" width="42" height="42">
             <span>Elonn</span>
         </a>
         <nav class="nav" aria-label="Primary navigation">
