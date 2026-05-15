@@ -34,7 +34,7 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
         gtag('js', new Date());
         gtag('config', 'G-LNJE3CGYKC');
     </script>
-    <link rel="stylesheet" href="/assets/elonn.css">
+    <link rel="stylesheet" href="/assets/css/elonn.css">
 </head>
 <body>
     <header class="site-header" aria-label="Primary">
@@ -67,6 +67,6 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
         </nav>
     </footer>
 
-    <script src="/assets/elonn.js" defer></script>
+    <script src="/assets/js/elonn.js" defer></script>
 </body>
 </html>
