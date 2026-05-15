@@ -29,13 +29,13 @@ $error = $data['error'] ?? null;
         <p class="eyebrow">A browser becomes a place</p>
         <h2 id="world-title">Step through a page and into a world.</h2>
         <p>
-            Elonn turns the web into a spatial starting point. The screen becomes a room, the room becomes a map, and every surface can become a tool you carry with you.
+            Elonn turns the web into a spatial starting point. The screen becomes a field, the field becomes a map, and every surface can become a tool you carry with you.
         </p>
     </section>
 
     <section class="overview" aria-label="World principles">
         <article>
-            <span>Room Layer</span>
+            <span>Field Layer</span>
             <h2>Objects stay in the world.</h2>
             <p>Markers, places, and future map objects belong to the surrounding environment so movement has direction and context.</p>
         </article>
@@ -58,7 +58,7 @@ $error = $data['error'] ?? null;
         </div>
         <div>
             <p>
-                The Android preview is an early AR build of the same idea: world markers stay in the room, while your carry layer stays close to the screen.
+                The Android preview is an early AR build of the same idea: world markers stay in the field, while your carry layer stays close to the screen.
             </p>
             <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download Android APK</a>
         </div>
