@@ -1,19 +1,22 @@
 # Elonn
 
-`elonn.local` is the public Elonn web site and account entry point. Production is `elonn.com`.
+`elonn.local` is the public account and launch surface for Elonn. Production is `elonn.com`.
 
-This app owns the customer-facing marketing surface and the browser account experience. It does not own identity data and must not connect directly to `elonn_api`.
+This repo owns the browser-facing entry point for login, registration, account state, and the handoff into `web.elonn`. It does not own identity data and must not connect directly to `elonn_api`.
 
-## Current Purpose
+## Role in the stack
 
-- Present the Elonn marketing/conversion page.
-- Link users into the Web browser runtime.
-- Provide browser-facing account pages for login, registration, account display, and logout.
-- Call `api.elonn.local` or `api.elonn.com` for identity operations.
+Consumption order:
+
+1. User visits `elonn.local` or `elonn.com`
+2. Account actions authenticate against `api.elonn`
+3. Successful login sets the shared `elonn_api_token` cookie
+4. User enters `web.elonn`
+5. `web.elonn` loads World composition and service surfaces from `world.elonn`
+
+This repo is the public front door. It is not a service authority.
 
 ## Routes
-
-Current browser routes:
 
 ```text
 GET /
@@ -27,35 +30,13 @@ GET /account
 POST /account/logout
 ```
 
-The landing page also has progressive-enhancement login and registration modals. The full account routes work without JavaScript.
-
-## Structure
-
-```text
-config/
-  config.php
-.env
-.env.example
-composer.json
-vendor/
-public/
-  index.php
-  .htaccess
-  assets/
-src/
-  ApiClient.php
-  Response.php
-  Router.php
-  View.php
-templates/
-  layout.php
-  home.php
-  account/
-```
+The landing page uses progressive enhancement. The account routes must still work without JavaScript.
 
 ## Configuration
 
-Create `.env` for environment-specific values:
+Create `.env` from `.env.example` and keep it uncommitted.
+
+Important keys:
 
 ```env
 APP_ENV=
@@ -67,54 +48,39 @@ ELONN_WEB_URL=
 ELONN_TIME_URL=
 ```
 
-Blank values use host-based defaults.
+Local defaults point to `.local` hosts. Production defaults point to `.com` hosts.
 
-Local defaults:
+`public/index.php` loads `vendor/autoload.php`, calls `Dotenv::createImmutable(BASE_PATH)->safeLoad()`, then loads `config/config.php`. `config/config.php` is the only place that reads deployment environment values and returns normalized config arrays.
+
+## Migrations
+
+No database migrations are required for this repo.
+
+If the account or launch flow needs new persistent state, that state belongs in the owning service, not here.
+
+## Layout
 
 ```text
-ELONN_API_BASE_URL=https://api.elonn.local
-ELONN_COOKIE_DOMAIN=.elonn.local
-ELONN_WEB_URL=https://web.elonn.local/
-ELONN_TIME_URL=https://time.elonn.local/
+config/
+  config.php
+.env
+.env.example
+composer.json
+composer.lock
+vendor/
+public/
+  index.php
+  .htaccess
+  assets/
+src/
+templates/
 ```
-
-Production defaults:
-
-```text
-ELONN_API_BASE_URL=https://api.elonn.com
-ELONN_COOKIE_DOMAIN=.elonn.com
-ELONN_WEB_URL=https://web.elonn.com/
-ELONN_TIME_URL=https://time.elonn.com/
-```
-
-`public/index.php` loads `vendor/autoload.php` and `vlucas/phpdotenv`. `config/config.php` is the only layer that reads deployment environment values and returns normalized config arrays to the application.
-
-## Identity Boundary
-
-- `api.elonn.local` owns shared identity.
-- `elonn.local` owns the visible account UI.
-- Login and registration POSTs call API identity endpoints.
-- Successful login and registration set the shared `elonn_api_token` cookie.
-- `/account` reads the current identity by calling `GET /identity/me` on the API.
-- This app has no database and no identity tables.
-
-Do not add OAuth, MFA, password reset, roles, teams, or third-party app authorization here yet.
-
-## Related Services
-
-- `api.elonn.local`: shared identity authority.
-- `time.elonn.local`: calendar/time product service.
-- `web.elonn.local`: browser runtime.
-- `world.elonn.local`: Home/world composition service.
-- `social.elonn.local`: native social object service.
-
-## Deployment Notes
-
-- Apache should serve this project through `public/`, or the project-root `.htaccess` should rewrite requests into `public/`.
-- No database migration is required for this app.
-- Production should use explicit `.env` values. Host-based defaults are retained as a fallback.
 
 ## Verification
+
+```bash
+find public src templates -name '*.php' -print0 | xargs -0 -n1 php -l
+```
 
 Local:
 
@@ -134,8 +100,11 @@ https://elonn.com/account/register
 https://elonn.com/account
 ```
 
-Run PHP syntax checks:
+## Related repos
 
-```bash
-find public src templates -name '*.php' -print0 | xargs -0 -n1 php -l
-```
+- `api.elonn.local`: shared identity authority
+- `web.elonn.local`: browser runtime
+- `world.elonn.local`: composition and service aggregation
+- `time.elonn.local`: calendar/time service
+- `social.elonn.local`: social object service
+- `admin.elonn.local`: admin console
