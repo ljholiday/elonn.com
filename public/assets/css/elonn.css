@@ -180,6 +180,7 @@ h2 {
 
 .overview,
 .story,
+.runtime-status,
 .app-preview,
 .access {
     width: min(1180px, calc(100% - 2rem));
@@ -209,6 +210,7 @@ h2 {
 }
 
 .overview article,
+.runtime-status,
 .app-preview,
 .access {
     border: 1px solid var(--line);
@@ -242,6 +244,40 @@ h2 {
     margin-top: 1rem;
     color: var(--accent);
     font-weight: 800;
+}
+
+.runtime-status {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 2rem;
+    margin-bottom: 1rem;
+    padding: clamp(1.2rem, 4vw, 2rem);
+}
+
+.runtime-status ul {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.runtime-status li {
+    display: grid;
+    gap: 0.18rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(225, 233, 214, 0.18);
+    border-radius: 6px;
+    background: rgba(7, 8, 6, 0.42);
+}
+
+.runtime-status strong {
+    color: var(--text);
+}
+
+.runtime-status span {
+    color: var(--muted);
+    line-height: 1.45;
 }
 
 .app-preview,
@@ -612,6 +648,7 @@ h2 {
     .site-header,
     .nav,
     .overview,
+    .runtime-status,
     .app-preview,
     .access {
         display: block;
@@ -660,7 +697,8 @@ h2 {
     }
 
     .app-preview p,
-    .access p {
+    .access p,
+    .runtime-status ul {
         margin-top: 1.4rem;
     }
 }
