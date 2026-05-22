@@ -15,6 +15,7 @@ $error = $data['error'] ?? null;
             </p>
             <div class="actions" aria-label="Primary actions">
                 <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Enter World</a>
+                <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download APK</a>
                 <?php if ($identity === null): ?>
                     <a class="button" href="/account/register" data-auth-open="register">Create account</a>
                     <a class="button" href="/account/login" data-auth-open="login">Log in</a>
