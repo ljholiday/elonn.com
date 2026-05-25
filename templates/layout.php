@@ -5,7 +5,7 @@
 /** @var array{id: string, email: string, display_name: string|null}|null $identity */
 /** @var string $worldUrl */
 $currentTemplate = $template;
-$pageDescription = 'Elonn is the new front page for a spatial internet: a world layer for places, tools, and persistent digital presence.';
+$pageDescription = 'Elonn helps you find things everywhere: real-world places, internet information, and social activity, with web and Android demos building toward XR headsets.';
 $pageUrl = 'https://elonn.com/';
 $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
 ?>
@@ -47,10 +47,9 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
                 <a href="/account/login" data-auth-open="login">Log in</a>
                 <a href="/account/register" data-auth-open="register">Create account</a>
             <?php else: ?>
-                <a href="/start">Start</a>
                 <a href="/account">Account</a>
             <?php endif; ?>
-            <a class="nav__cta" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Enter World</a>
+            <a class="nav__cta" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
         </nav>
     </header>
 
@@ -59,10 +58,9 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
     <footer class="site-footer">
         <div>
             <strong>Elonn</strong>
-            <span>Spatial internet services and identity.</span>
+            <span>Find real-world, internet, and social information.</span>
         </div>
         <nav aria-label="Footer">
-            <a href="/start">Start</a>
             <a href="/account">Account</a>
             <a href="mailto:hello@elonn.com">Contact</a>
             <a href="/privacy">Privacy</a>

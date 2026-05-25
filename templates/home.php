@@ -8,86 +8,86 @@ $error = $data['error'] ?? null;
     <section class="hero" aria-labelledby="hero-title">
         <div class="hero__media" aria-hidden="true"></div>
         <div class="hero__content">
-            <p class="eyebrow">The World runtime is online</p>
+            <p class="eyebrow">Early demos are online</p>
             <h1 id="hero-title">Elonn</h1>
             <p class="hero__summary">
-                A spatial runtime for places, people, tools, and live digital surfaces arranged around you instead of buried in tabs.
+                Find things everywhere: places in the real world, information on the internet, and people, messages, and activity in your social world. We are building toward XR headsets, where that information can be with you wherever you are.
             </p>
             <div class="actions" aria-label="Primary actions">
-                <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Enter World</a>
-                <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download APK</a>
+                <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
                 <?php if ($identity === null): ?>
                     <a class="button" href="/account/register" data-auth-open="register">Create account</a>
                     <a class="button" href="/account/login" data-auth-open="login">Log in</a>
                 <?php else: ?>
-                    <a class="button" href="/start">Start</a>
+                    <a class="button" href="/account">Account</a>
                 <?php endif; ?>
+                <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download Android Demo</a>
             </div>
         </div>
     </section>
 
     <section class="story" id="world" aria-labelledby="world-title">
-        <p class="eyebrow">A runtime becomes a place</p>
-        <h2 id="world-title">World, Social, Maps, Find, Time, and Android now share the same frame.</h2>
+        <p class="eyebrow">Built for the XR future</p>
+        <h2 id="world-title">The web and Android demos are steps toward information that lives around you.</h2>
         <p>
-            Elonn World composes services into a field layer, carry windows, side rails, docks, and native Android surfaces. The same session now feeds the browser runtime and the AR preview.
+            The long-term plan is ubiquitous XR headsets: lightweight displays that can show useful information in the real world, when and where people need it. Today, we are proving the information layer with basic web and Android demos.
         </p>
     </section>
 
-    <section class="overview" aria-label="World principles">
+    <section class="overview" aria-label="What Elonn helps you find">
         <article>
-            <span>Field Layer</span>
-            <h2>Places stay in the world.</h2>
-            <p>Maps POIs render as field markers so restaurants, parks, transit, gas, and local points of interest have direction and context.</p>
+            <span>Real world</span>
+            <h2>Find places around you.</h2>
+            <p>Look for restaurants, parks, transit, gas, local destinations, and other nearby points of interest.</p>
         </article>
         <article>
-            <span>Carry Layer</span>
-            <h2>Tools stay with you.</h2>
-            <p>Find, Social, Events, Calendar, Messages, and Settings open as carry windows while top and bottom docks stay centered on the runtime.</p>
+            <span>Internet</span>
+            <h2>Find information online.</h2>
+            <p>Search across web information without losing the places, people, and context you are already looking at.</p>
         </article>
         <article>
-            <span>Context Rails</span>
-            <h2>The sides carry meaning.</h2>
-            <p>World Contract and Social Menu rails now act as scrollable context and navigation surfaces instead of hiding behind generic controls.</p>
+            <span>Social</span>
+            <h2>Find people and activity.</h2>
+            <p>Follow messages, conversations, events, and social activity alongside the real-world and internet information you are exploring.</p>
         </article>
     </section>
 
     <section class="runtime-status" aria-labelledby="runtime-status-title">
         <div>
-            <p class="eyebrow">Current build</p>
-            <h2 id="runtime-status-title">The product surface is taking shape.</h2>
+            <p class="eyebrow">Available now</p>
+            <h2 id="runtime-status-title">These are working demos, not a finished product.</h2>
         </div>
         <ul>
-            <li><strong>Login</strong><span>Android signs into the shared Elonn runtime.</span></li>
-            <li><strong>World session</strong><span>Panels, rails, docks, maps objects, and services come from World.</span></li>
-            <li><strong>Messages</strong><span>Inbox, thread navigation, new messages, and replies are back in the Android carry window.</span></li>
-            <li><strong>POIs</strong><span>Maps field objects are resiliently parsed for the AR field layer.</span></li>
+            <li><strong>Web demo</strong><span>Try Elonn in a browser and explore the information we are connecting.</span></li>
+            <li><strong>Android demo</strong><span>Use the Android build to see the same information in a more spatial view.</span></li>
+            <li><strong>XR direction</strong><span>These demos are groundwork for headsets that can make real-world, internet, and social information visible around you.</span></li>
+            <li><strong>Shared account</strong><span>Use one Elonn identity across the demos we are bringing online.</span></li>
         </ul>
     </section>
 
     <section class="app-preview" aria-labelledby="app-title">
         <div>
-            <p class="eyebrow">Android AR runtime</p>
-            <h2 id="app-title">Carry the world off the page and into the room.</h2>
+            <p class="eyebrow">XR direction</p>
+            <h2 id="app-title">The goal is useful information in the world, not another app to manage.</h2>
         </div>
         <div>
             <p>
-                The Android build now uses the live World session: AR field markers, centered docks, scrollable side rails, carry panels, Social, Messages, Find, Time, and the current APK download.
+                Android lets us test the shape of that future now: the same places, internet information, and social activity shown in a more spatial way while XR headsets continue to mature.
             </p>
-            <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download Android APK</a>
+            <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download Android Demo</a>
         </div>
     </section>
 
     <section class="access" id="access" aria-labelledby="access-title">
         <div>
-            <p class="eyebrow">Live demo</p>
-            <h2 id="access-title">The first doorway is open.</h2>
+            <p class="eyebrow">Web demo</p>
+            <h2 id="access-title">Start in the browser.</h2>
         </div>
         <div>
             <p>
-                The web runtime is live now as the first public doorway into Elonn World. Create an account to use the shared identity session across World, Social, Maps, and the Android preview.
+                The web demo is the easiest way to try Elonn now. Create an account to use the same identity across the web and Android demos.
             </p>
-            <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Enter World</a>
+            <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
         </div>
     </section>
 </main>

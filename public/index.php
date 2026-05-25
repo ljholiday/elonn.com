@@ -35,7 +35,7 @@ $router->get('/account/login', static function () use ($api, $worldUrl): void {
     $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
     $identity = currentIdentity($api);
     if ($identity !== null) {
-        Response::redirect($returnTo ?? '/start');
+        Response::redirect($returnTo ?? $worldUrl);
         return;
     }
 
@@ -82,7 +82,7 @@ $router->post('/account/login', static function () use ($api, $cookieDomain, $wo
     }
 
     setAuthCookie($result['token'], $result['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? '/start');
+    Response::redirect($returnTo ?? $worldUrl);
 });
 
 $router->post('/login', static function () use ($api, $cookieDomain, $worldUrl): void {
@@ -114,14 +114,14 @@ $router->post('/login', static function () use ($api, $cookieDomain, $worldUrl):
     }
 
     setAuthCookie($result['token'], $result['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? '/start');
+    Response::redirect($returnTo ?? $worldUrl);
 });
 
 $router->get('/account/register', static function () use ($api, $worldUrl): void {
     $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
     $identity = currentIdentity($api);
     if ($identity !== null) {
-        Response::redirect($returnTo ?? '/start');
+        Response::redirect($returnTo ?? $worldUrl);
         return;
     }
 
@@ -170,7 +170,7 @@ $router->post('/account/register', static function () use ($api, $cookieDomain, 
     }
 
     setAuthCookie($login['token'], $login['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? '/start');
+    Response::redirect($returnTo ?? $worldUrl);
 });
 
 $router->get('/start', static function () use ($api, $config, $worldUrl): void {
