@@ -18,8 +18,6 @@ $error = $data['error'] ?? null;
                 <?php if ($identity === null): ?>
                     <a class="button" href="/account/register" data-auth-open="register">Create account</a>
                     <a class="button" href="/account/login" data-auth-open="login">Log in</a>
-                <?php else: ?>
-                    <a class="button" href="/account">Account</a>
                 <?php endif; ?>
                 <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download Android Demo</a>
             </div>
