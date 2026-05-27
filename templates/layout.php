@@ -49,6 +49,7 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
             <?php else: ?>
                 <a href="/account">Account</a>
             <?php endif; ?>
+            <a href="https://docs.elonn.com">Documentation</a>
             <a class="nav__cta" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
         </nav>
     </header>
@@ -62,6 +63,7 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
         </div>
         <nav aria-label="Footer">
             <a href="/account">Account</a>
+            <a href="https://docs.elonn.com">Documentation</a>
             <a href="mailto:hello@elonn.com">Contact</a>
             <a href="/privacy">Privacy</a>
             <a href="/terms">Terms</a>
