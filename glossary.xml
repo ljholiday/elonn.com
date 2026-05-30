@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Elonn canonical terminology — machine-readable glossary for agent consumption.
+  Authoritative detail lives in docs.elonn.local/terminology/terms/<term>.md.
+  Do not use terms, identifiers, route names, payload keys, or UI copy that
+  contradict the definitions below.
+-->
+<glossary>
+
+  <section name="social" authority="social.elonn.local">
+    <term name="activity">A feed record capturing that a member performed a verb on an object; drives the public social feed.</term>
+    <term name="circle">A derived set of members reachable through shared private community or event co-membership, computed via graph traversal.</term>
+    <term name="community">A named, visibility-scoped group of members; the primary organizational unit of the social layer.</term>
+    <term name="conversation">A titled, threaded group discussion anchored to a visibility scope.</term>
+    <term name="discovery">Graph traversal of a member's social graph, determining which members and objects are reachable at each circle depth.</term>
+    <term name="event">A scheduled social gathering with a title, optional time bounds, visibility, and an attached conversation. Bare "event" always means a social event — never a calendar entry.</term>
+    <term name="message">A direct, private communication from one member to another; lives in threads, visible only to the two participants.</term>
+    <term name="notification">An alert delivered to a specific member about something that happened and is relevant to them.</term>
+    <term name="presence">A member's real-time availability signal recording current status, availability, and runtime.</term>
+    <term name="profile">A member's social-layer identity; distinct from the API identity record.</term>
+    <term name="relationship">An explicit, directional record from one member to another expressing a social stance (currently: block only).</term>
+    <term name="reply">A message posted into an existing conversation or event by any member who can view it.</term>
+    <term name="visibility">The access scope of a social object determining which members can see it.</term>
+  </section>
+
+  <section name="spatial" authority="mixed">
+    <term name="anchor" authority="world.elonn.local">The placement mode of a world object — carry (user-anchored) or field (world-anchored).</term>
+    <term name="carry" authority="world.elonn.local">The primary user-following region; objects anchored to a member that persist across spatial movement.</term>
+    <term name="field" authority="maps.elonn.local">The primary world-anchored region; the shared spatial panorama where field objects are placed at coordinates. The output of the maps service is called the field — not a map.</term>
+    <term name="marker" authority="maps.elonn.local">A visual point-of-interest placed at a position in the field, authored by the maps service.</term>
+    <term name="panel" authority="world.elonn.local">A carry-layer content surface loaded inside a carry object by the runtime via a panel URL. Distinct from surface.</term>
+  </section>
+
+  <section name="surface-system" authority="mixed">
+    <term name="action" authority="varies">An executable interaction exposed by an object or surface; connects user intent to service behavior.</term>
+    <term name="block" authority="world.elonn.local">A structured content region within a surface; organizes objects, cards, controls, and findings.</term>
+    <term name="card" authority="web.elonn.local">A visual presentation wrapper for an object within a block; renderer-level, temporary, replaceable. Distinct from surface.</term>
+    <term name="deck" authority="world.elonn.local">A navigable ordered collection of surfaces within a region; represents movement through contextual space.</term>
+    <term name="dock" authority="surface.elonn.local">An attached stack region that follows the runtime viewport or user.</term>
+    <term name="field-placement" authority="surface.elonn.local">A spatially anchored placement for a surface.</term>
+    <term name="finding" authority="find.elonn.local">A discovered or computed informational result surfaced by a service; distinct from notification and activity.</term>
+    <term name="focus-surface" authority="surface.elonn.local">The currently active surface in a stack.</term>
+    <term name="flip" authority="runtime-specific">A thresholded transition that changes the focus surface in a stack.</term>
+    <term name="navigation" authority="world.elonn.local">The model governing spatial movement through the runtime; not document traversal.</term>
+    <term name="neighbor-surface" authority="runtime-specific">A partially visible surface adjacent to the focus surface.</term>
+    <term name="object" authority="varies">A renderable entity within a block, originating from a service (place, member, message, etc.).</term>
+    <term name="region" authority="world.elonn.local">A persistent spatial zone within a runtime; primary regions are carry and field.</term>
+    <term name="stack" authority="surface.elonn.local">An ordered collection of surfaces with one focus surface.</term>
+    <term name="surface" authority="surface.elonn.local">A persistent interactive container around service-backed or runtime-backed content. Distinct from panel and card.</term>
+    <term name="viewport" authority="runtime-specific">The visible presentation region for a stack.</term>
+    <term name="window" authority="world.elonn.local">Reserved. An independently managed spatial container with z-order and overlap; not a current Elonn primitive. Do not use.</term>
+  </section>
+
+  <section name="service-runtime" authority="mixed">
+    <term name="api" authority="api.elonn.local">The identity and authentication authority for all Elonn services; owns members, sessions, and tokens.</term>
+    <term name="calendar-event" authority="time.elonn.local">A calendar entry in the time service; may mirror a social event. Never bare "event" when referring to a time service object.</term>
+    <term name="contract" authority="world.elonn.local">The named, versioned payload definition that tells the runtime what capabilities and objects to expect.</term>
+    <term name="find" authority="find.elonn.local">The search service that owns query records, findings, and heads (classifications). Distinct from discovery.</term>
+    <term name="maps" authority="maps.elonn.local">The spatial data service; authority for field layout, field width, and markers.</term>
+    <term name="member" authority="api.elonn.local">A person with a registered account in the Elonn identity system.</term>
+    <term name="runtime" authority="world.elonn.local">A complete executable presentation environment (web, android, xr, desktop). Always qualify when ambiguous.</term>
+    <term name="session" authority="varies">A bounded interaction context. Always qualify: auth session, runtime session, surface session, or find session. Never bare "session".</term>
+    <term name="social" authority="social.elonn.local">The social object authority; owns conversations, communities, events, profiles, presence, activity, notifications, and relationships.</term>
+    <term name="time" authority="time.elonn.local">The calendar and scheduling service; owns calendars and time events.</term>
+    <term name="token" authority="api.elonn.local">A credential issued by the API service after authentication; identifies the member across all service calls.</term>
+    <term name="web" authority="web.elonn.local">The browser runtime application that renders the world contract and delivers the Elonn experience.</term>
+    <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, and time data into a runtime contract.</term>
+  </section>
+
+  <distinctions>
+    <distinction>
+      <a>message</a><b>reply</b>
+      <rule>Messages are direct member-to-member. Replies go into conversations and events.</rule>
+    </distinction>
+    <distinction>
+      <a>conversation</a><b>thread</b>
+      <rule>Thread is a direct message thread. Conversations are group discussions.</rule>
+    </distinction>
+    <distinction>
+      <a>event</a><b>calendar-event</b>
+      <rule>Bare "event" means a social event (social.elonn.local). Calendar events belong to the time service.</rule>
+    </distinction>
+    <distinction>
+      <a>circle</a><b>relationship</b>
+      <rule>Circles are derived from community membership. Relationships are explicit records (block only).</rule>
+    </distinction>
+    <distinction>
+      <a>discovery</a><b>find</b>
+      <rule>Discovery is the social graph traversal. Find is the search service.</rule>
+    </distinction>
+    <distinction>
+      <a>field</a><b>map</b>
+      <rule>The maps service produces the field. The output is not called a map.</rule>
+    </distinction>
+    <distinction>
+      <a>surface</a><b>panel</b>
+      <rule>A surface is a persistent contextual environment within a deck. A panel is a carry-layer content surface loaded via runtime_panel_url. Different levels of the system.</rule>
+    </distinction>
+    <distinction>
+      <a>card</a><b>surface</b>
+      <rule>A card is a visual wrapper for an object — renderer-level, temporary. A surface is the contextual environment the card lives inside.</rule>
+    </distinction>
+    <distinction>
+      <a>finding</a><b>notification</b>
+      <rule>A finding is a discovered or computed result delivered to a surface. A notification is a targeted alert delivered to a member.</rule>
+    </distinction>
+    <distinction>
+      <a>finding</a><b>discovery</b>
+      <rule>Discovery is the social graph traversal (how members are reached). Findings are the computed outputs delivered to surfaces.</rule>
+    </distinction>
+    <distinction>
+      <a>window</a><b>surface</b>
+      <rule>Window is reserved and must not be used for any current Elonn primitive.</rule>
+    </distinction>
+  </distinctions>
+
+</glossary>

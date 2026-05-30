@@ -1,6 +1,11 @@
 # Universal Agent Guidelines
 - Prefer clarity and pragmatism over cleverness.
 
+## Terminology
+- `glossary.xml` in this directory is the canonical machine-readable terminology reference.
+- Do not use terms, identifiers, route names, payload keys, or UI copy that contradict it.
+- The `<distinctions>` block lists the most common term confusions — read it before naming anything.
+
 ## Scope
 - These instructions apply across repositories unless a repo-local file explicitly overrides them.
 
