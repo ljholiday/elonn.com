@@ -4,16 +4,6 @@
 
 This repo owns the browser-facing account surface: login, registration, account state, logout, and the handoff into the runtime shell. It does not own identity data.
 
-## Project map
-
-- `api.elonn.local`: identity authority and member directory
-- `maps.elonn.local`: canonical field dataset service
-- `social.elonn.local`: social object service and direct messages
-- `time.elonn.local`: calendar and time service
-- `world.elonn.local`: composition and presentation contract layer
-- `web.elonn.local`: browser runtime implementation
-- `admin.elonn.local`: operator console
-
 ## Role in the stack
 
 Consumption order:
@@ -25,27 +15,6 @@ Consumption order:
 5. `web.elonn` loads JSON runtime composition from `world.elonn`
 6. `world.elonn` composes maps, social, time, and identity data into runtime-ready objects
 7. `web.elonn` renders the shell and opens carry panels
-
-## What we kept from `social.elonara.local`
-
-`social.elonn` uses the useful social model from `social.elonara.local` and drops the old product shell.
-
-What carried over:
-
-- conversations and replies for public or semi-public discourse
-- direct message threads for member-to-member communication
-- communities and memberships
-- presence and relationship state
-- visibility and permission concepts
-- reactions, activity, and notification intent
-
-What did not carry over:
-
-- the old Elonara product UI
-- monolithic page structure
-- product-specific assumptions about layout or branding
-
-That extraction is the source of the current `social.elonn` boundary.
 
 ## Routes
 
@@ -130,13 +99,3 @@ https://elonn.com/account/login
 https://elonn.com/account/register
 https://elonn.com/account
 ```
-
-## Related repos
-
-- `api.elonn.local`: shared identity authority
-- `web.elonn.local`: browser runtime
-- `world.elonn.local`: composition and service aggregation
-- `maps.elonn.local`: canonical field dataset
-- `time.elonn.local`: calendar and time service
-- `social.elonn.local`: social object service
-- `admin.elonn.local`: operator console
