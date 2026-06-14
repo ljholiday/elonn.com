@@ -28,7 +28,7 @@
     <term name="carry" authority="world.elonn.local">The primary user-following region; objects anchored to a member that persist across spatial movement.</term>
     <term name="field" authority="maps.elonn.local">The primary world-anchored region; the shared spatial panorama where field objects are placed at coordinates. The output of the maps service is called the field — not a map.</term>
     <term name="marker" authority="maps.elonn.local">A visual point-of-interest placed at a position in the field, authored by the maps service.</term>
-    <term name="panel" authority="world.elonn.local">A carry-layer content surface loaded inside a carry object by the runtime via a panel URL. Distinct from surface.</term>
+    <term name="panel" authority="world.elonn.local">A carry-layer content surface loaded inside a surface by the runtime via content_source.url when content_source.kind is runtime_panel. Distinct from surface.</term>
   </section>
 
   <section name="surface-system" authority="mixed">
@@ -94,7 +94,7 @@
     </distinction>
     <distinction>
       <a>surface</a><b>panel</b>
-      <rule>A surface is a persistent contextual environment within a deck. A panel is a carry-layer content surface loaded via runtime_panel_url. Different levels of the system.</rule>
+      <rule>A surface is a persistent contextual environment within a deck. A panel is carry-layer content loaded inside a surface via content_source.url when content_source.kind is runtime_panel. Different levels of the system.</rule>
     </distinction>
     <distinction>
       <a>card</a><b>surface</b>
