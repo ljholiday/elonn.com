@@ -14,12 +14,12 @@
     <term name="conversation">A titled, threaded group discussion anchored to a visibility scope.</term>
     <term name="discovery">Graph traversal of a member's social graph, determining which members and objects are reachable at each circle depth.</term>
     <term name="event">A scheduled social gathering with a title, optional time bounds, visibility, and an attached conversation. Bare "event" always means a social event — never a calendar entry.</term>
-    <term name="message">A direct, private communication from one member to another; lives in threads, visible only to the two participants.</term>
+    <term name="message" authority="messages">A direct, private communication from one member to another; lives in threads, visible only to the two participants. Current implementation may be served by social.elonn.local, but Messages are a separate bounded context.</term>
     <term name="notification">An alert delivered to a specific member about something that happened and is relevant to them.</term>
     <term name="presence">A member's real-time availability signal recording current status, availability, and runtime.</term>
     <term name="profile">A member's social-layer identity; distinct from the API identity record.</term>
     <term name="relationship">An explicit, directional record from one member to another expressing a social stance (currently: block only).</term>
-    <term name="reply">A message posted into an existing conversation or event by any member who can view it.</term>
+    <term name="reply">A post added to an existing conversation or event by any member who can view it. A reply is not a direct Message.</term>
     <term name="visibility">The access scope of a social object determining which members can see it.</term>
   </section>
 
@@ -60,11 +60,11 @@
     <term name="member" authority="api.elonn.local">A person with a registered account in the Elonn identity system.</term>
     <term name="runtime" authority="world.elonn.local">A complete executable presentation environment (web, android, xr, desktop). Always qualify when ambiguous.</term>
     <term name="session" authority="varies">A bounded interaction context. Always qualify: auth session, runtime session, surface session, or find session. Never bare "session".</term>
-    <term name="social" authority="social.elonn.local">The social object authority; owns conversations, communities, events, profiles, presence, activity, notifications, and relationships.</term>
+    <term name="social" authority="social.elonn.local">The social object authority; owns conversations, communities, events, profiles, presence, activity, notifications, relationships, circles, and discovery graph behavior. Direct Messages are a separate bounded context.</term>
     <term name="time" authority="time.elonn.local">The calendar and scheduling service; owns calendars and time events.</term>
     <term name="token" authority="api.elonn.local">A credential issued by the API service after authentication; identifies the member across all service calls.</term>
     <term name="web" authority="web.elonn.local">The browser runtime application that renders the world contract and delivers the Elonn experience.</term>
-    <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, and time data into a runtime contract.</term>
+    <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, messages, and time data into a runtime contract.</term>
   </section>
 
   <distinctions>
