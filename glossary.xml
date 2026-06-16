@@ -9,10 +9,10 @@
 
   <section name="social" authority="social.elonn.local">
     <term name="activity">A feed record capturing that a member performed a verb on an object; drives the public social feed.</term>
-    <term name="circle">A derived set of members reachable through shared private community or event co-membership, computed via graph traversal.</term>
+    <term name="circle">A derived set of members reachable through shared private community co-membership, computed via graph traversal. Not followers, friends, or a manual connection list.</term>
     <term name="community">A named, visibility-scoped group of members; the primary organizational unit of the social layer.</term>
     <term name="conversation">A titled, threaded group discussion anchored to a visibility scope.</term>
-    <term name="discovery">Graph traversal of a member's social graph, determining which members and objects are reachable at each circle depth.</term>
+    <term name="discovery">Graph traversal of circle reach, built from private community co-membership, determining which members and objects are reachable at each circle depth.</term>
     <term name="event">A scheduled social gathering with a title, optional time bounds, visibility, and an attached conversation. Bare "event" always means a social event — never a calendar entry.</term>
     <term name="message" authority="messages">A direct, private communication from one member to another; lives in threads, visible only to the two participants. Current implementation may be served by social.elonn.local, but Messages are a separate bounded context.</term>
     <term name="notification">An alert delivered to a specific member about something that happened and is relevant to them.</term>
