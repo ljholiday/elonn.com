@@ -2,6 +2,11 @@
     RewriteEngine On
     RewriteBase /
 
+    RewriteCond %{HTTP_HOST} \.local(?::[0-9]+)?$ [NC]
+    RewriteRule ^\.well-known/caldav/?$ https://services.elonn.local/caldav/ [R=301,L]
+
+    RewriteRule ^\.well-known/caldav/?$ https://services.elonn.com/caldav/ [R=301,L]
+
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [L]

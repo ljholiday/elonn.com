@@ -35,7 +35,7 @@ final class ApiClient
     }
 
     /**
-     * @return array{id: string, email: string, display_name: string|null}|null
+     * @return array{id: string, email: string, username: string|null, display_name: string|null}|null
      */
     public function me(string $token): ?array
     {
@@ -51,9 +51,11 @@ final class ApiClient
         }
 
         $displayName = $response['json']['display_name'] ?? null;
+        $username = $response['json']['username'] ?? null;
         return [
             'id' => (string) $id,
             'email' => $email,
+            'username' => is_string($username) ? $username : null,
             'display_name' => is_string($displayName) ? $displayName : null,
         ];
     }
@@ -61,38 +63,6 @@ final class ApiClient
     public function logout(string $token): void
     {
         $this->request('POST', '/identity/logout', [], $token);
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    public function davTokens(string $token): array
-    {
-        $response = $this->request('GET', '/identity/dav-tokens', null, $token);
-        $tokens = is_array($response['json']) ? ($response['json']['tokens'] ?? null) : null;
-        return $response['status'] === 200 && is_array($tokens) ? array_values($tokens) : [];
-    }
-
-    /**
-     * @return array{ok:bool,status:int,token:?string,label:?string,error:?string}
-     */
-    public function createDavToken(string $token, ?string $label): array
-    {
-        $response = $this->request('POST', '/identity/dav-tokens', ['label' => $label], $token);
-        $json = is_array($response['json']) ? $response['json'] : [];
-        return [
-            'ok' => $response['status'] === 201,
-            'status' => $response['status'],
-            'token' => is_string($json['token'] ?? null) ? $json['token'] : null,
-            'label' => is_string($json['label'] ?? null) ? $json['label'] : null,
-            'error' => is_string($json['error'] ?? null) ? $json['error'] : null,
-        ];
-    }
-
-    public function revokeDavToken(string $token, int $davTokenId): bool
-    {
-        $response = $this->request('DELETE', '/identity/dav-tokens/' . $davTokenId, null, $token);
-        return $response['status'] === 200;
     }
 
     /**

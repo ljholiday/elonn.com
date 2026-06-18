@@ -19,6 +19,7 @@ return [
     'products' => [
         'world_url' => site_string_config('ELONN_WEB_URL', $local ? 'https://web.elonn.local/' : 'https://web.elonn.com/'),
         'time_url' => site_string_config('ELONN_TIME_URL', $local ? 'https://time.elonn.local/' : 'https://time.elonn.com/'),
+        'services_url' => site_string_config('ELONN_SERVICES_URL', $local ? 'https://services.elonn.local/' : 'https://services.elonn.com/'),
     ],
 ];
 
