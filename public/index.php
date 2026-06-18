@@ -188,9 +188,10 @@ $router->get('/start', static function () use ($api, $config, $worldUrl): void {
     ]);
 });
 
-$router->get('/account', static function () use ($api, $worldUrl): void {
-    $identity = currentIdentity($api);
-    if ($identity === null) {
+$router->get('/account', static function () use ($api, $config, $worldUrl): void {
+    $token = authToken();
+    $identity = $token === null ? null : $api->me($token);
+    if ($identity === null || $token === null) {
         Response::redirect('/account/login');
         return;
     }
@@ -198,8 +199,50 @@ $router->get('/account', static function () use ($api, $worldUrl): void {
     renderPage('Account', 'account/account.php', [
         'identity' => $identity,
         'worldUrl' => $worldUrl,
-        'error' => null,
+        'error' => accountMessage($_GET['error'] ?? null),
+        'notice' => accountMessage($_GET['notice'] ?? null),
+        'davTokens' => $api->davTokens($token),
+        'davToken' => null,
+        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
     ]);
+});
+
+$router->post('/account/caldav-tokens', static function () use ($api, $config, $worldUrl): void {
+    $token = authToken();
+    $identity = $token === null ? null : $api->me($token);
+    if ($identity === null || $token === null) {
+        Response::redirect('/account/login');
+        return;
+    }
+
+    $label = cleanOptionalString($_POST['label'] ?? null);
+    $result = $api->createDavToken($token, $label);
+    renderPage('Account', 'account/account.php', [
+        'identity' => $identity,
+        'worldUrl' => $worldUrl,
+        'error' => $result['ok'] ? null : 'Unable to create a CalDAV password.',
+        'notice' => null,
+        'davTokens' => $api->davTokens($token),
+        'davToken' => $result['ok'] ? $result['token'] : null,
+        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
+    ], $result['ok'] ? 201 : 500);
+});
+
+$router->post('/account/caldav-tokens/revoke', static function () use ($api): void {
+    $token = authToken();
+    if ($token === null) {
+        Response::redirect('/account/login');
+        return;
+    }
+
+    $davTokenId = positiveInt($_POST['token_id'] ?? null);
+    if ($davTokenId === null) {
+        Response::redirect('/account?error=invalid_dav_token');
+        return;
+    }
+
+    $revoked = $api->revokeDavToken($token, $davTokenId);
+    Response::redirect('/account?' . ($revoked ? 'notice=dav_token_revoked' : 'error=dav_token_revoke_failed') . '#caldav');
 });
 
 $router->get('/privacy', static function () use ($api, $worldUrl): void {
@@ -306,6 +349,15 @@ function cleanOptionalString(mixed $value): ?string
 
     $value = trim($value);
     return $value === '' ? null : $value;
+}
+
+function positiveInt(mixed $value): ?int
+{
+    if (!is_numeric($value)) {
+        return null;
+    }
+    $value = (int) $value;
+    return $value > 0 ? $value : null;
 }
 
 /**
@@ -418,6 +470,16 @@ function errorMessage(mixed $error): ?string
         'user_exists' => 'An account already exists for that email.',
         'register_failed' => 'Unable to create account.',
         'login_failed' => 'Unable to log in.',
+        default => null,
+    };
+}
+
+function accountMessage(mixed $message): ?string
+{
+    return match ($message) {
+        'dav_token_revoked' => 'CalDAV password revoked.',
+        'invalid_dav_token' => 'Choose a valid CalDAV password.',
+        'dav_token_revoke_failed' => 'Unable to revoke that CalDAV password.',
         default => null,
     };
 }

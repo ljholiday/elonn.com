@@ -19,6 +19,7 @@ This repository is the public front door. It handles login, registration, accoun
 - public account surface
 - login and registration routes
 - account and logout flow
+- CalDAV password creation and revocation
 - environment-aware handoff into `web.elonn`
 
 ## Current stack flow

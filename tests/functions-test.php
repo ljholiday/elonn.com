@@ -61,6 +61,25 @@ function errorMessage(mixed $error): ?string
     };
 }
 
+function positiveInt(mixed $value): ?int
+{
+    if (!is_numeric($value)) {
+        return null;
+    }
+    $value = (int) $value;
+    return $value > 0 ? $value : null;
+}
+
+function accountMessage(mixed $message): ?string
+{
+    return match ($message) {
+        'dav_token_revoked' => 'CalDAV password revoked.',
+        'invalid_dav_token' => 'Choose a valid CalDAV password.',
+        'dav_token_revoke_failed' => 'Unable to revoke that CalDAV password.',
+        default => null,
+    };
+}
+
 // ---------------------------------------------------------------------------
 // Test runner
 // ---------------------------------------------------------------------------
@@ -126,6 +145,12 @@ test('errorMessage: login_failed', fn () => errorMessage('login_failed') === 'Un
 test('errorMessage: unknown key returns null', fn () => errorMessage('unknown') === null);
 test('errorMessage: null returns null', fn () => errorMessage(null) === null);
 test('errorMessage: integer returns null', fn () => errorMessage(0) === null);
+
+// CalDAV account helpers
+test('positiveInt: accepts token id', fn () => positiveInt('7') === 7);
+test('positiveInt: rejects invalid token id', fn () => positiveInt('none') === null);
+test('accountMessage: revoked notice', fn () => accountMessage('dav_token_revoked') === 'CalDAV password revoked.');
+test('accountMessage: unknown returns null', fn () => accountMessage('unknown') === null);
 
 echo "\nPassed: $passed  Failed: $failed\n";
 exit($failed > 0 ? 1 : 0);

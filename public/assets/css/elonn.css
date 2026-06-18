@@ -311,6 +311,7 @@ h2 {
 
 .account-page {
     display: grid;
+    gap: 1rem;
     min-height: 100vh;
     place-items: center;
     padding: 7rem 1rem 3rem;
@@ -328,6 +329,15 @@ h2 {
     border-radius: 8px;
     background: var(--panel);
     backdrop-filter: blur(10px);
+}
+
+.account-panel--wide {
+    width: min(720px, 100%);
+}
+
+.account-panel h2 {
+    margin: 0 0 0.8rem;
+    font-size: clamp(2rem, 7vw, 3.6rem);
 }
 
 .account-panel h1 {
@@ -371,6 +381,108 @@ h2 {
     background: rgba(110, 25, 25, 0.32);
     color: #ffd5d5;
 }
+
+.account-notice,
+.caldav-secret {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(180, 255, 220, 0.42);
+    border-radius: 6px;
+    background: rgba(20, 90, 65, 0.3);
+    color: #d9ffec;
+}
+
+.caldav-secret {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.caldav-secret h3,
+.caldav-secret p,
+.caldav-tokens h3 {
+    margin: 0;
+}
+
+.caldav-secret code,
+.caldav-settings code {
+    overflow-wrap: anywhere;
+}
+
+.caldav-settings {
+    display: grid;
+    gap: 0.6rem;
+    margin: 1.2rem 0;
+}
+
+.caldav-settings div {
+    display: grid;
+    grid-template-columns: minmax(90px, 0.35fr) minmax(0, 1fr);
+    gap: 0.8rem;
+}
+
+.caldav-settings dt {
+    color: var(--accent-2);
+    font-weight: 800;
+}
+
+.caldav-settings dd {
+    margin: 0;
+}
+
+.caldav-create {
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.caldav-create .button {
+    justify-self: start;
+}
+
+.caldav-tokens {
+    margin-top: 1.2rem;
+}
+
+.caldav-tokens ul {
+    display: grid;
+    gap: 0.7rem;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.caldav-tokens li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(7, 8, 6, 0.48);
+}
+
+.caldav-tokens li > div {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.caldav-tokens span {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+@media (max-width: 560px) {
+    .caldav-settings div {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+
+    .caldav-tokens li {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
 
 .account-details {
     display: grid;
