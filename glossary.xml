@@ -54,6 +54,7 @@
 
   <section name="service-runtime" authority="mixed">
     <term name="api" authority="api.elonn.local">The identity and authentication authority for all Elonn services; owns members, sessions, and tokens.</term>
+    <term name="appointment" authority="time.elonn.local">A scheduled Time entry with start and end bounds, represented as a VEVENT for calendar interoperability. Distinct from a Social event.</term>
     <term name="calendar-event" authority="time.elonn.local">A calendar entry in the time service; may mirror a social event. Never bare "event" when referring to a time service object.</term>
     <term name="contract" authority="world.elonn.local">The named, versioned payload definition that tells the runtime what capabilities and objects to expect.</term>
     <term name="find" authority="find.elonn.local">The search service that owns query records, findings, and heads (classifications). Distinct from discovery.</term>
@@ -62,7 +63,8 @@
     <term name="runtime" authority="world.elonn.local">A complete executable presentation environment (web, android, xr, desktop). Always qualify when ambiguous.</term>
     <term name="session" authority="varies">A bounded interaction context. Always qualify: auth session, runtime session, surface session, or find session. Never bare "session".</term>
     <term name="social" authority="social.elonn.local">The social object authority; owns conversations, communities, events, profiles, presence, activity, notifications, relationships, circles, discovery graph behavior, and Social DMs.</term>
-    <term name="time" authority="time.elonn.local">The calendar and scheduling service; owns calendars and time events.</term>
+    <term name="task" authority="time.elonn.local">An actionable Time entry with completion state and optional start, due date, recurrence, priority, and reminders, represented as a VTODO for calendar interoperability.</term>
+    <term name="time" authority="time.elonn.local">The calendar, scheduling, and task service; owns calendars, appointments, tasks, recurrence, reminders, schedule views, and calendar mirrors.</term>
     <term name="token" authority="api.elonn.local">A credential issued by the API service after authentication; identifies the member across all service calls.</term>
     <term name="web" authority="web.elonn.local">The browser runtime application that renders the world contract and delivers the Elonn experience.</term>
     <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, messages, and time data into a runtime contract.</term>
@@ -84,6 +86,10 @@
     <distinction>
       <a>event</a><b>calendar-event</b>
       <rule>Bare "event" means a social event (social.elonn.local). Calendar events belong to the time service.</rule>
+    </distinction>
+    <distinction>
+      <a>event</a><b>appointment</b>
+      <rule>An event is a Social gathering. An appointment is a scheduled Time entry represented as VEVENT.</rule>
     </distinction>
     <distinction>
       <a>circle</a><b>relationship</b>
