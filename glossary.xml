@@ -48,6 +48,9 @@
     <term name="region" authority="world.elonn.local">A persistent spatial zone within a runtime; primary regions are carry and field.</term>
     <term name="stack" authority="surface.elonn.local">An ordered collection of surfaces with one focus surface.</term>
     <term name="surface" authority="surface.elonn.local">A persistent interactive container around service-backed or runtime-backed content. Distinct from panel and card.</term>
+    <term name="surface-object" authority="surface.elonn.local">Normalized runtime-safe content carried by a surface. A runtime renders this object and never parses its source HTML.</term>
+    <term name="translation" authority="surface.elonn.local">The server-side conversion of an external resource into a normalized Surface Object without executing source scripts.</term>
+    <term name="web-resource" authority="find.elonn.local">A public HTTP or HTTPS resource discovered by Find. Its source representation is not a runtime payload.</term>
     <term name="viewport" authority="runtime-specific">The visible presentation region for a stack.</term>
     <term name="window" authority="world.elonn.local">Reserved. An independently managed spatial container with z-order and overlap; not a current Elonn primitive. Do not use.</term>
   </section>
@@ -56,18 +59,18 @@
     <term name="api" authority="api.elonn.local">The identity and authentication authority for all Elonn services; owns members, sessions, and tokens.</term>
     <term name="appointment" authority="time.elonn.local">A scheduled Time entry with start and end bounds, represented as a VEVENT for calendar interoperability. Distinct from a Social event.</term>
     <term name="calendar-event" authority="time.elonn.local">A calendar entry in the time service; may mirror a social event. Never bare "event" when referring to a time service object.</term>
-    <term name="contract" authority="world.elonn.local">The named, versioned payload definition that tells the runtime what capabilities and objects to expect.</term>
+    <term name="contract" authority="world.elonn.local">The named, versioned, platform-neutral payload definition that tells every runtime what primitives, capabilities, actions, and objects to expect.</term>
     <term name="find" authority="find.elonn.local">The search service that owns query records, findings, and heads (classifications). Distinct from discovery.</term>
     <term name="maps" authority="maps.elonn.local">The spatial data service; authority for field layout, field width, and markers.</term>
     <term name="member" authority="api.elonn.local">A person with a registered account in the Elonn identity system.</term>
-    <term name="runtime" authority="world.elonn.local">A complete executable presentation environment (web, android, xr, desktop). Always qualify when ambiguous.</term>
+    <term name="runtime" authority="world.elonn.local">A platform adapter that consumes the World runtime contract and renders its primitives in a complete executable environment such as web, Android, iPad, XR, or desktop. Always qualify when ambiguous.</term>
     <term name="session" authority="varies">A bounded interaction context. Always qualify: auth session, runtime session, surface session, or find session. Never bare "session".</term>
     <term name="social" authority="social.elonn.local">The social object authority; owns conversations, communities, events, profiles, presence, activity, notifications, relationships, circles, discovery graph behavior, and Social DMs.</term>
     <term name="task" authority="time.elonn.local">An actionable Time entry with completion state and optional start, due date, recurrence, priority, and reminders, represented as a VTODO for calendar interoperability.</term>
     <term name="time" authority="time.elonn.local">The calendar, scheduling, and task service; owns calendars, appointments, tasks, recurrence, reminders, schedule views, and calendar mirrors.</term>
     <term name="token" authority="api.elonn.local">A credential issued by the API service after authentication; identifies the member across all service calls.</term>
-    <term name="web" authority="web.elonn.local">The browser runtime application that renders the world contract and delivers the Elonn experience.</term>
-    <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, messages, and time data into a runtime contract.</term>
+    <term name="web" authority="web.elonn.local">The browser adapter for the platform-neutral runtime contract and the first runtime conformance target.</term>
+    <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, messages, and time data into the platform-neutral runtime contract consumed by all runtimes.</term>
   </section>
 
   <distinctions>
@@ -114,6 +117,14 @@
     <distinction>
       <a>finding</a><b>notification</b>
       <rule>A finding is a discovered or computed result delivered to a surface. A notification is a targeted alert delivered to a member.</rule>
+    </distinction>
+    <distinction>
+      <a>finding</a><b>surface-object</b>
+      <rule>A finding is a candidate discovered by Find. A Surface Object is normalized runtime-safe content produced and persisted by Surface.</rule>
+    </distinction>
+    <distinction>
+      <a>surface</a><b>surface-object</b>
+      <rule>A surface is the durable member-scoped container with placement and identity. A Surface Object is the renderable normalized content carried by that surface.</rule>
     </distinction>
     <distinction>
       <a>finding</a><b>discovery</b>
