@@ -44,7 +44,8 @@
     <term name="flip" authority="runtime-specific">A thresholded transition that changes the focus surface in a stack.</term>
     <term name="navigation" authority="world.elonn.local">The model governing spatial movement through the runtime; not document traversal.</term>
     <term name="neighbor-surface" authority="runtime-specific">A partially visible surface adjacent to the focus surface.</term>
-    <term name="object" authority="varies">A renderable entity within a block, originating from a service (place, member, message, etc.).</term>
+    <term name="object" authority="world.elonn.local">A domain or composed platform entity with stable identity, state, permissions, actions, and relationships; runtimes may present an object as a panel, marker, list item, mesh, card, or future primitive.</term>
+    <term name="object-source" authority="world.elonn.local">The service-to-World description of a service-owned domain object before World assigns composed identity, placement, effective permissions, and runtime translation.</term>
     <term name="region" authority="world.elonn.local">A persistent spatial zone within a runtime; primary regions are carry and field.</term>
     <term name="stack" authority="surface.elonn.local">An ordered collection of surfaces with one focus surface.</term>
     <term name="surface" authority="surface.elonn.local">A persistent interactive container around service-backed or runtime-backed content. Distinct from panel and card.</term>
