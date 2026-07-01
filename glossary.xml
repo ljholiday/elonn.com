@@ -69,8 +69,9 @@
     <term name="task" authority="time.elonn.local">An actionable Time entry with completion state and optional start, due date, recurrence, priority, and reminders, represented as a VTODO for calendar interoperability.</term>
     <term name="time" authority="time.elonn.local">The calendar, scheduling, and task service; owns calendars, appointments, tasks, recurrence, reminders, schedule views, and calendar mirrors.</term>
     <term name="token" authority="api.elonn.local">A credential issued by the API service after authentication; identifies the member across all service calls.</term>
+    <term name="translator" authority="world.elonn.local">A platform component that converts the canonical World model into a runtime-specific contract for a declared capability class. Distinct from a renderer or runtime adapter.</term>
     <term name="web" authority="web.elonn.local">The browser adapter for the platform-neutral runtime contract and the first runtime conformance target.</term>
-    <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, messages, and time data into the platform-neutral runtime contract consumed by all runtimes.</term>
+    <term name="world" authority="world.elonn.local">The composition service that assembles identity, maps, social, messages, and time data into the canonical World model and translated runtime contracts consumed by runtimes.</term>
   </section>
 
   <distinctions>
