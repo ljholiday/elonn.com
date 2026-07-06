@@ -66,6 +66,38 @@ final class ApiClient
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function davTokens(string $token): array
+    {
+        $response = $this->request('GET', '/identity/dav-tokens', null, $token);
+        $tokens = is_array($response['json']) ? ($response['json']['tokens'] ?? null) : null;
+        return $response['status'] === 200 && is_array($tokens) ? array_values($tokens) : [];
+    }
+
+    /**
+     * @return array{ok:bool,status:int,token:?string,label:?string,error:?string}
+     */
+    public function createDavToken(string $token, ?string $label): array
+    {
+        $response = $this->request('POST', '/identity/dav-tokens', ['label' => $label], $token);
+        $json = is_array($response['json']) ? $response['json'] : [];
+        return [
+            'ok' => $response['status'] === 201,
+            'status' => $response['status'],
+            'token' => is_string($json['token'] ?? null) ? $json['token'] : null,
+            'label' => is_string($json['label'] ?? null) ? $json['label'] : null,
+            'error' => is_string($json['error'] ?? null) ? $json['error'] : null,
+        ];
+    }
+
+    public function revokeDavToken(string $token, int $davTokenId): bool
+    {
+        $response = $this->request('DELETE', '/identity/dav-tokens/' . $davTokenId, null, $token);
+        return $response['status'] === 200;
+    }
+
+    /**
      * @param array<string, mixed> $body
      * @return array{ok: bool, status: int, token?: string, expires_at?: string, error?: string}
      */

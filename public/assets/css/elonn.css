@@ -382,6 +382,14 @@ h2 {
     color: #ffd5d5;
 }
 
+.account-notice {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(147, 213, 167, 0.5);
+    border-radius: 6px;
+    background: rgba(25, 87, 48, 0.32);
+    color: #d7ffe0;
+}
+
 .caldav-settings code {
     overflow-wrap: anywhere;
 }
@@ -407,10 +415,69 @@ h2 {
     margin: 0;
 }
 
+.caldav-secret {
+    display: grid;
+    gap: 0.55rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid rgba(238, 188, 92, 0.56);
+    border-radius: 8px;
+    background: rgba(111, 82, 26, 0.26);
+}
+
+.caldav-secret h3,
+.caldav-secret p {
+    margin: 0;
+}
+
+.caldav-secret code {
+    overflow-wrap: anywhere;
+    font-size: 0.95rem;
+}
+
+.caldav-tokens {
+    margin-top: 1.4rem;
+}
+
+.caldav-tokens h3 {
+    margin: 0 0 0.8rem;
+}
+
+.caldav-tokens ul {
+    display: grid;
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.caldav-tokens li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(7, 8, 6, 0.48);
+}
+
+.caldav-tokens span {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
 @media (max-width: 560px) {
     .caldav-settings div {
         grid-template-columns: 1fr;
         gap: 0.2rem;
+    }
+
+    .caldav-tokens li {
+        align-items: stretch;
+        flex-direction: column;
     }
 }
 

@@ -10,10 +10,10 @@ $checks = [
         str_contains($template, 'Server URL')
         && str_contains($template, 'Username')
         && str_contains($template, 'normal Elonn account password'),
-    'Account has no generated credential controls' =>
-        !str_contains($index, '/account/caldav-tokens')
-        && !str_contains($template, 'Create CalDAV password')
-        && !str_contains($template, 'Revoke'),
+    'Account provides generated credential controls' =>
+        str_contains($index, '/account/caldav-tokens')
+        && str_contains($template, 'Create CalDAV password')
+        && str_contains($template, 'Revoke'),
     'CalDAV discovery redirects to unified services origin' =>
         str_contains($rewrite, 'services.elonn.com/caldav/')
         && str_contains($rewrite, 'services.elonn.local/caldav/'),
