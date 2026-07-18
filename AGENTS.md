@@ -2,7 +2,7 @@
 - Prefer clarity and pragmatism over cleverness.
 
 ## Terminology
-- `glossary.xml` in this directory is the canonical machine-readable terminology reference.
+- `../docs.elonn.local/content/terminology/glossary.xml` is the canonical machine-readable terminology reference.
 - Do not use terms, identifiers, route names, payload keys, or UI copy that contradict it.
 - The `<distinctions>` block lists the most common term confusions — read it before naming anything.
 

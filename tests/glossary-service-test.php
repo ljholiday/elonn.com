@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-$glossary = file_get_contents(dirname(__DIR__) . '/glossary.xml') ?: '';
+$glossary = file_get_contents(dirname(__DIR__, 2) . '/docs.elonn.local/content/terminology/glossary.xml') ?: '';
 $checks = [
     'Glossary defines service in the service-runtime section' =>
         str_contains($glossary, '<section name="service-runtime" authority="mixed">')
