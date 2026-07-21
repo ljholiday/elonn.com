@@ -8,10 +8,10 @@ $error = $data['error'] ?? null;
     <section class="hero" aria-labelledby="hero-title">
         <div class="hero__media" aria-hidden="true"></div>
         <div class="hero__content">
-            <p class="eyebrow">Early demos are online</p>
-            <h1 id="hero-title">Elonn</h1>
+            <p class="eyebrow">Live now — Web</p>
+            <h1 id="hero-title">One place to find everything around you.</h1>
             <p class="hero__summary">
-                Find things everywhere: places in the real world, information on the internet, and people, messages, and activity in your social world. We are building toward XR headsets, where that information can be with you wherever you are.
+                Real-world places, the web, and your social world &mdash; in a single experience, not a folder of separate apps. Elonn is built to run wherever you are today, and to carry straight through to the lightweight XR headsets coming next. Try it now in your browser.
             </p>
             <div class="actions" aria-label="Primary actions">
                 <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
@@ -19,16 +19,15 @@ $error = $data['error'] ?? null;
                     <a class="button" href="/account/register" data-auth-open="register">Create account</a>
                     <a class="button" href="/account/login" data-auth-open="login">Log in</a>
                 <?php endif; ?>
-                <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download Android Demo</a>
             </div>
         </div>
     </section>
 
     <section class="story" id="world" aria-labelledby="world-title">
         <p class="eyebrow">Built for the XR future</p>
-        <h2 id="world-title">The web and Android demos are steps toward information that lives around you.</h2>
+        <h2 id="world-title">The first proof of a much bigger idea: information that lives around you, not inside an app.</h2>
         <p>
-            The long-term plan is ubiquitous XR headsets: lightweight displays that can show useful information in the real world, when and where people need it. Today, we are proving the information layer with basic web and Android demos.
+            Lightweight XR headsets are coming, and they'll need software that shows useful information exactly when and where you need it &mdash; not another app icon to tap. That's what we're building. You can already try the platform underneath it today, on the web.
         </p>
     </section>
 
@@ -53,27 +52,13 @@ $error = $data['error'] ?? null;
     <section class="runtime-status" aria-labelledby="runtime-status-title">
         <div>
             <p class="eyebrow">Available now</p>
-            <h2 id="runtime-status-title">These are working demos, not a finished product.</h2>
+            <h2 id="runtime-status-title">Real software you can use today, with a lot more on the way.</h2>
         </div>
         <ul>
-            <li><strong>Web demo</strong><span>Try Elonn in a browser and explore the information we are connecting.</span></li>
-            <li><strong>Android demo</strong><span>Use the Android build to see the same information in a more spatial view.</span></li>
-            <li><strong>XR direction</strong><span>These demos are groundwork for headsets that can make real-world, internet, and social information visible around you.</span></li>
-            <li><strong>Shared account</strong><span>Use one Elonn identity across the demos we are bringing online.</span></li>
+            <li><strong>Web demo</strong><span>Try Elonn in a browser and explore the information we're connecting.</span></li>
+            <li><strong>XR direction</strong><span>Every runtime we build proves out the same platform underneath &mdash; the foundation for headsets that make information visible in the world around you.</span></li>
+            <li><strong>Shared account</strong><span>One Elonn identity will work across every runtime we bring online.</span></li>
         </ul>
-    </section>
-
-    <section class="app-preview" aria-labelledby="app-title">
-        <div>
-            <p class="eyebrow">XR direction</p>
-            <h2 id="app-title">The goal is useful information in the world, not another app to manage.</h2>
-        </div>
-        <div>
-            <p>
-                Android lets us test the shape of that future now: the same places, internet information, and social activity shown in a more spatial way while XR headsets continue to mature.
-            </p>
-            <a class="button" href="/assets/downloads/elonn-world-ar-debug.apk" download>Download Android Demo</a>
-        </div>
     </section>
 
     <section class="access" id="access" aria-labelledby="access-title">
@@ -83,10 +68,18 @@ $error = $data['error'] ?? null;
         </div>
         <div>
             <p>
-                The web demo is the easiest way to try Elonn now. Create an account to use the same identity across the web and Android demos.
+                The web demo is the easiest way to try Elonn now. Create an account to get started &mdash; the same identity will carry across every runtime as we bring them online.
             </p>
             <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
         </div>
+    </section>
+
+    <section class="story" aria-labelledby="investors-title">
+        <p class="eyebrow">Backing Elonn</p>
+        <h2 id="investors-title">Building toward the end of app-switching.</h2>
+        <p>
+            If the thesis behind Elonn is interesting to you, <a href="/investors">read more and get in touch</a>.
+        </p>
     </section>
 </main>
 

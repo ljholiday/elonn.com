@@ -115,6 +115,11 @@ a {
     max-width: 840px;
 }
 
+.hero__content h1 {
+    font-size: clamp(2.25rem, 5.5vw, 4.25rem);
+    line-height: 1.08;
+}
+
 .eyebrow {
     margin: 0 0 0.9rem;
     color: var(--accent-2);
@@ -364,7 +369,9 @@ h2 {
     font-weight: 800;
 }
 
-.account-form input {
+.account-form input,
+.account-form select,
+.account-form textarea {
     min-height: 42px;
     padding: 0.55rem 0.7rem;
     border: 1px solid var(--line);
@@ -372,6 +379,10 @@ h2 {
     background: rgba(7, 8, 6, 0.74);
     color: var(--text);
     font: inherit;
+}
+
+.account-form textarea {
+    resize: vertical;
 }
 
 .account-error {
