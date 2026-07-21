@@ -75,11 +75,12 @@ ELONN_API_BASE_URL=
 ELONN_COOKIE_DOMAIN=
 ELONN_WEB_URL=
 ELONN_TIME_URL=
-ELONN_SERVICES_URL=
 ELONN_CONTACT_EMAIL=
 ```
 
 `ELONN_CONTACT_EMAIL` is where the `/contact` form's submissions are sent (via PHP's `mail()`); defaults to `hello@elonn.com`.
+
+`ELONN_SERVICES_URL`/`services.elonn.com` no longer exists — it was tried and abandoned. CalDAV now points at `time.elonn.com/dav/` instead (see Routes below).
 
 Local defaults point to `.local` hosts. Production defaults point to `.com` hosts.
 

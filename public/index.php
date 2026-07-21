@@ -34,7 +34,7 @@ $router->get('/', static function () use ($api, $worldUrl): void {
 
 $router->get('/.well-known/caldav', static function () use ($config): void {
     http_response_code(301);
-    header('Location: ' . rtrim(productUrl($config, 'services'), '/') . '/caldav/');
+    header('Location: ' . rtrim(productUrl($config, 'time'), '/') . '/dav/');
 });
 
 $router->get('/account/login', static function () use ($api, $worldUrl): void {
@@ -209,7 +209,7 @@ $router->get('/account', static function () use ($api, $config, $worldUrl): void
         'notice' => accountMessage($_GET['notice'] ?? null),
         'davTokens' => $api->davTokens($token),
         'davToken' => null,
-        'davUrl' => rtrim(productUrl($config, 'services'), '/') . '/caldav/',
+        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
     ]);
 });
 
@@ -230,7 +230,7 @@ $router->post('/account/caldav-tokens', static function () use ($api, $config, $
         'notice' => null,
         'davTokens' => $api->davTokens($token),
         'davToken' => $result['ok'] ? $result['token'] : null,
-        'davUrl' => rtrim(productUrl($config, 'services'), '/') . '/caldav/',
+        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
     ], $result['ok'] ? 201 : 500);
 });
 
@@ -371,7 +371,6 @@ function productUrl(array $config, string $product): string
 {
     return match ($product) {
         'time' => $config['products']['time_url'] ?? '#',
-        'services' => $config['products']['services_url'] ?? '#',
         default => '#',
     };
 }
