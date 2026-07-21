@@ -5,7 +5,7 @@
 /** @var array{id: string, email: string, display_name: string|null}|null $identity */
 /** @var string $worldUrl */
 $currentTemplate = $template;
-$pageDescription = 'Elonn helps you find things everywhere: real-world places, internet information, and social activity, with web and Android demos building toward XR headsets.';
+$pageDescription = 'Elonn helps you find things everywhere: real-world places, internet information, and social activity, in one place, built toward XR headsets.';
 $pageUrl = 'https://elonn.com/';
 $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
 ?>
@@ -64,7 +64,8 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
         <nav aria-label="Footer">
             <a href="/account">Account</a>
             <a href="https://docs.elonn.com">Documentation</a>
-            <a href="mailto:hello@elonn.com">Contact</a>
+            <a href="/investors">Investors</a>
+            <a href="/contact">Contact</a>
             <a href="/privacy">Privacy</a>
             <a href="/terms">Terms</a>
         </nav>

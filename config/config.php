@@ -13,6 +13,9 @@ return [
     'auth' => [
         'cookie_domain' => site_string_config('ELONN_COOKIE_DOMAIN', $local ? '.elonn.local' : '.elonn.com'),
     ],
+    'contact' => [
+        'to' => site_string_config('ELONN_CONTACT_EMAIL', 'hello@elonn.com'),
+    ],
     'services' => [
         'api_base_url' => rtrim(site_string_config('ELONN_API_BASE_URL', $local ? 'https://api.elonn.local' : 'https://api.elonn.com'), '/'),
     ],

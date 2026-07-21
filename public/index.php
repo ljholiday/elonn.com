@@ -20,6 +20,7 @@ redirectToHttps();
 $apiBaseUrl = $config['services']['api_base_url'];
 $cookieDomain = $config['auth']['cookie_domain'];
 $worldUrl = $config['products']['world_url'];
+$contactTo = $config['contact']['to'];
 $api = new ApiClient($apiBaseUrl);
 $router = new Router();
 
@@ -248,6 +249,64 @@ $router->post('/account/caldav-tokens/revoke', static function () use ($api): vo
 
     $revoked = $api->revokeDavToken($token, $davTokenId);
     Response::redirect('/account?' . ($revoked ? 'notice=dav_token_revoked' : 'error=dav_token_revoke_failed') . '#caldav');
+});
+
+$router->get('/investors', static function () use ($api, $worldUrl): void {
+    renderPage('For Investors', 'investors.php', [
+        'identity' => currentIdentity($api),
+        'worldUrl' => $worldUrl,
+    ]);
+});
+
+$router->get('/contact', static function () use ($api, $worldUrl): void {
+    renderPage('Contact', 'contact.php', [
+        'identity' => currentIdentity($api),
+        'worldUrl' => $worldUrl,
+        'notice' => contactMessage($_GET['notice'] ?? null),
+        'error' => contactMessage($_GET['error'] ?? null),
+        'topic' => cleanOptionalString($_GET['topic'] ?? null) ?? 'general',
+        'old' => [],
+    ]);
+});
+
+$router->post('/contact', static function () use ($api, $worldUrl, $contactTo): void {
+    // Honeypot: real visitors never fill this hidden field.
+    if (cleanOptionalString($_POST['company'] ?? null) !== null) {
+        Response::redirect('/contact?notice=sent');
+        return;
+    }
+
+    $name = cleanOptionalString($_POST['name'] ?? null);
+    $email = normalizeEmail($_POST['email'] ?? null);
+    $topic = cleanOptionalString($_POST['topic'] ?? null) ?? 'general';
+    $message = cleanOptionalString($_POST['message'] ?? null);
+
+    if ($name === null || $email === null || $message === null) {
+        renderPage('Contact', 'contact.php', [
+            'identity' => currentIdentity($api),
+            'worldUrl' => $worldUrl,
+            'notice' => null,
+            'error' => 'Name, email, and a message are all required.',
+            'topic' => $topic,
+            'old' => formOld(['name', 'email', 'message']),
+        ], 400);
+        return;
+    }
+
+    $sent = sendContactMessage($contactTo, $name, $email, $topic, $message);
+    if (!$sent) {
+        renderPage('Contact', 'contact.php', [
+            'identity' => currentIdentity($api),
+            'worldUrl' => $worldUrl,
+            'notice' => null,
+            'error' => 'Something went wrong sending that. Please try again, or email hello@elonn.com directly.',
+            'topic' => $topic,
+            'old' => formOld(['name', 'email', 'message']),
+        ], 500);
+        return;
+    }
+
+    Response::redirect('/contact?notice=sent');
 });
 
 $router->get('/privacy', static function () use ($api, $worldUrl): void {
@@ -479,6 +538,30 @@ function accountMessage(mixed $message): ?string
         'dav_token_revoked' => 'CalDAV password revoked.',
         default => null,
     };
+}
+
+function contactMessage(mixed $message): ?string
+{
+    return match ($message) {
+        'sent' => 'Thanks — we\'ll be in touch soon.',
+        default => null,
+    };
+}
+
+function sendContactMessage(string $to, string $name, string $email, string $topic, string $message): bool
+{
+    $topicLabel = match ($topic) {
+        'investing' => 'Investing',
+        'volunteering' => 'Volunteering',
+        'press' => 'Press',
+        default => 'General',
+    };
+
+    $subject = 'Elonn contact form: ' . $topicLabel;
+    $body = "From: {$name} <{$email}>\nTopic: {$topicLabel}\n\n{$message}\n";
+    $headers = "From: Elonn Contact Form <noreply@elonn.com>\r\nReply-To: {$email}\r\n";
+
+    return mail($to, $subject, $body, $headers);
 }
 
 function positiveInt(mixed $value): ?int
