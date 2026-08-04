@@ -29,7 +29,7 @@ function allowedReturnTo(mixed $value): ?string
         return null;
     }
     $value = trim($value);
-    if (str_starts_with($value, '/')) {
+    if (isLocalRedirectPath($value)) {
         return $value;
     }
     $parts = parse_url($value);
@@ -47,6 +47,20 @@ function allowedReturnTo(mixed $value): ?string
         'elonn.com', 'api.elonn.com', 'time.elonn.com', 'web.elonn.com',
         'world.elonn.com', 'social.elonn.com', 'admin.elonn.com',
     ], true) ? $value : null;
+}
+
+function isLocalRedirectPath(string $value): bool
+{
+    if ($value === '' || $value[0] !== '/') {
+        return false;
+    }
+
+    $decoded = rawurldecode($value);
+    if (str_starts_with($value, '//') || str_starts_with($decoded, '//')) {
+        return false;
+    }
+
+    return !str_contains($value, '\\') && !str_contains($decoded, '\\');
 }
 
 function errorMessage(mixed $error): ?string
@@ -110,6 +124,9 @@ test('allowedReturnTo: empty string returns null', fn () => allowedReturnTo('') 
 test('allowedReturnTo: whitespace returns null', fn () => allowedReturnTo('  ') === null);
 test('allowedReturnTo: relative path allowed', fn () => allowedReturnTo('/dashboard') === '/dashboard');
 test('allowedReturnTo: root path allowed', fn () => allowedReturnTo('/') === '/');
+test('allowedReturnTo: protocol-relative URL blocked', fn () => allowedReturnTo('//evil.com/path') === null);
+test('allowedReturnTo: encoded protocol-relative URL blocked', fn () => allowedReturnTo('/%2fevil.com/path') === null);
+test('allowedReturnTo: backslash host variant blocked', fn () => allowedReturnTo('/\\evil.com/path') === null);
 test('allowedReturnTo: elonn.local host allowed', fn () => allowedReturnTo('https://elonn.local/') === 'https://elonn.local/');
 test('allowedReturnTo: api.elonn.local allowed', fn () => allowedReturnTo('https://api.elonn.local/path') === 'https://api.elonn.local/path');
 test('allowedReturnTo: time.elonn.com allowed', fn () => allowedReturnTo('https://time.elonn.com/path') === 'https://time.elonn.com/path');

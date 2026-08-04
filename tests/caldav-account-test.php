@@ -14,9 +14,9 @@ $checks = [
         str_contains($index, '/account/caldav-tokens')
         && str_contains($template, 'Create CalDAV password')
         && str_contains($template, 'Revoke'),
-    'CalDAV discovery redirects to unified services origin' =>
-        str_contains($rewrite, 'services.elonn.com/caldav/')
-        && str_contains($rewrite, 'services.elonn.local/caldav/'),
+    'CalDAV discovery redirects to Time origin' =>
+        str_contains($rewrite, 'time.elonn.com/dav/')
+        && str_contains($rewrite, 'time.elonn.local/dav/'),
 ];
 
 $failed = 0;

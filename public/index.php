@@ -15,7 +15,7 @@ require BASE_PATH . '/vendor/autoload.php';
 Dotenv::createImmutable(BASE_PATH)->safeLoad();
 $config = require BASE_PATH . '/config/config.php';
 
-redirectToHttps();
+redirectToHttps($config['app']['url']);
 
 $apiBaseUrl = $config['services']['api_base_url'];
 $cookieDomain = $config['auth']['cookie_domain'];
@@ -461,7 +461,7 @@ function allowedReturnTo(mixed $value): ?string
     }
 
     $value = trim($value);
-    if (str_starts_with($value, '/')) {
+    if (isLocalRedirectPath($value)) {
         return $value;
     }
 
@@ -500,21 +500,52 @@ function isHttps(): bool
         || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
 }
 
-function redirectToHttps(): void
+function redirectToHttps(string $canonicalUrl): void
 {
     if (isHttps()) {
         return;
     }
 
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (!is_string($host) || $host === '') {
+    $target = safeHttpsRedirectTarget($canonicalUrl, ['elonn.local', 'www.elonn.local', 'elonn.com', 'www.elonn.com']);
+    if ($target === null) {
         return;
     }
 
-    $uri = $_SERVER['REQUEST_URI'] ?? '/';
     http_response_code(308);
-    header('Location: https://' . $host . (is_string($uri) ? $uri : '/'));
+    header('Location: ' . $target);
     exit;
+}
+
+function isLocalRedirectPath(string $value): bool
+{
+    if ($value === '' || $value[0] !== '/') {
+        return false;
+    }
+
+    $decoded = rawurldecode($value);
+    if (str_starts_with($value, '//') || str_starts_with($decoded, '//')) {
+        return false;
+    }
+
+    return !str_contains($value, '\\') && !str_contains($decoded, '\\');
+}
+
+/**
+ * @param array<int, string> $allowedHosts
+ */
+function safeHttpsRedirectTarget(string $canonicalUrl, array $allowedHosts): ?string
+{
+    $uri = $_SERVER['REQUEST_URI'] ?? '/';
+    $path = is_string($uri) && str_starts_with($uri, '/') ? $uri : '/';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $host = is_string($host) ? strtolower(explode(':', $host, 2)[0]) : '';
+
+    if (in_array($host, $allowedHosts, true)) {
+        return 'https://' . $host . $path;
+    }
+
+    $canonical = rtrim($canonicalUrl, '/');
+    return $canonical === '' ? null : $canonical . $path;
 }
 
 function errorMessage(mixed $error): ?string
