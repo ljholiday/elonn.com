@@ -9,7 +9,7 @@ This repository is `elonn.com` — the company's front page and public/business 
 - `api.elonn.local`: identity authority and member directory
 - `web.elonn.local`: browser runtime implementation
 - `world.elonn.local`: composition and presentation contract layer
-- `mind.elonn.local`: dispatch layer between World and Services, currently integrating with Find
+- `mind.elonn.local`: dispatch layer between World and enabled Services
 - `find.elonn.local`: search and findings service
 - `maps.elonn.local`: canonical field dataset
 - `messages.elonn.local`: open member-to-member message threads outside Social context
@@ -32,9 +32,10 @@ This repository is `elonn.com` — the company's front page and public/business 
 2. Login and registration post to `api.elonn`
 3. `api.elonn` sets the shared auth token
 4. `web.elonn` sends a Runtime-World Call to `world.elonn`
-5. `world.elonn` always forwards a World-Mind Call to `mind.elonn`; there is no local or cached response path
-6. `mind.elonn` forwards the call to `find.elonn` today — other services are not yet wired into Mind
-7. `web.elonn` renders the returned World Dataset
+5. `world.elonn` normally forwards a World-Mind Call to `mind.elonn`; `world.restore` is the explicit saved-state exception
+6. `mind.elonn` selects one enabled Service operation, currently including Find for web search, Maps for field/place/geographic work, and Paint or other configured Services when enabled
+7. The selected Service returns a canonical Service Dataset through Mind and World
+8. `web.elonn` renders the returned World Dataset without calling downstream Services directly
 
 ## Routes
 
@@ -80,7 +81,11 @@ ELONN_CONTACT_EMAIL=
 
 `ELONN_CONTACT_EMAIL` is where the `/contact` form's submissions are sent (via PHP's `mail()`); defaults to `hello@elonn.com`.
 
-`ELONN_SERVICES_URL`/`services.elonn.com` no longer exists — it was tried and abandoned. CalDAV now points at `time.elonn.com/dav/` instead (see Routes below).
+`ELONN_SERVICES_URL` and the retired shared services host are no longer active. CalDAV should point at `time.elonn.com/dav/`.
+
+## Next composition work
+
+The highest-value platform work is to surface Time, Messages, and Social through the World/Mind composition path as canonical World content. Web must continue to call only API for runtime-owned authentication and World for runtime data; it must not add direct calls to Time, Messages, Social, Find, Maps, Paint, provider endpoints, or service loaders.
 
 Local defaults point to `.local` hosts. Production defaults point to `.com` hosts.
 
