@@ -63,6 +63,40 @@ function isLocalRedirectPath(string $value): bool
     return !str_contains($value, '\\') && !str_contains($decoded, '\\');
 }
 
+/**
+ * @param array<int, string> $allowedHosts
+ */
+function safeHttpsRedirectTarget(string $canonicalUrl, array $allowedHosts): ?string
+{
+    $uri = $_SERVER['REQUEST_URI'] ?? '/';
+    $path = is_string($uri) && isLocalRedirectPath($uri) ? $uri : '/';
+    $authority = $_SERVER['HTTP_HOST'] ?? '';
+    $authority = is_string($authority) ? strtolower(trim($authority)) : '';
+    $host = parse_url('http://' . $authority, PHP_URL_HOST);
+    $host = is_string($host) ? strtolower($host) : '';
+
+    if (in_array($host, $allowedHosts, true)) {
+        return 'https://' . $host . $path;
+    }
+
+    if (isLoopbackHost($host) && preg_match('/\A(?:localhost|127(?:\.[0-9]{1,3}){3}|\[::1\])(?::[0-9]{1,5})?\z/', $authority) === 1) {
+        return 'https://' . $authority . $path;
+    }
+
+    $canonical = rtrim($canonicalUrl, '/');
+    return $canonical === '' ? null : $canonical . $path;
+}
+
+function isLoopbackHost(string $host): bool
+{
+    $isLoopbackIpv4 = filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false
+        && str_starts_with($host, '127.');
+
+    return $host === 'localhost'
+        || $host === '::1'
+        || $isLoopbackIpv4;
+}
+
 function errorMessage(mixed $error): ?string
 {
     return match ($error) {
@@ -133,6 +167,35 @@ test('allowedReturnTo: time.elonn.com allowed', fn () => allowedReturnTo('https:
 test('allowedReturnTo: external host blocked', fn () => allowedReturnTo('https://evil.com/') === null);
 test('allowedReturnTo: ftp scheme blocked', fn () => allowedReturnTo('ftp://elonn.com/') === null);
 test('allowedReturnTo: http scheme allowed', fn () => allowedReturnTo('http://elonn.local/') === 'http://elonn.local/');
+
+// safeHttpsRedirectTarget
+test('safeHttpsRedirectTarget: allowed production host preserved', function () {
+    $_SERVER['HTTP_HOST'] = 'elonn.com';
+    $_SERVER['REQUEST_URI'] = '/account?x=1';
+
+    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/account?x=1';
+});
+
+test('safeHttpsRedirectTarget: localhost host preserved', function () {
+    $_SERVER['HTTP_HOST'] = 'localhost:8080';
+    $_SERVER['REQUEST_URI'] = '/account';
+
+    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://localhost:8080/account';
+});
+
+test('safeHttpsRedirectTarget: unknown host falls back to canonical', function () {
+    $_SERVER['HTTP_HOST'] = 'preview.example.test';
+    $_SERVER['REQUEST_URI'] = '/account';
+
+    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/account';
+});
+
+test('safeHttpsRedirectTarget: unsafe request URI falls back to root path', function () {
+    $_SERVER['HTTP_HOST'] = 'elonn.com';
+    $_SERVER['REQUEST_URI'] = '//evil.com/path';
+
+    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/';
+});
 
 // errorMessage
 test('errorMessage: missing_fields', fn () => errorMessage('missing_fields') === 'Email and password are required.');
