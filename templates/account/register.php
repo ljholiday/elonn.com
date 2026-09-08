@@ -16,6 +16,7 @@ $isPartial = isset($currentTemplate) && $currentTemplate === 'home.php';
         <form class="account-form" method="post" action="/account/register">
             <?php if ($returnTo !== null): ?><input type="hidden" name="return_to" value="<?= htmlspecialchars($returnTo, ENT_QUOTES, 'UTF-8') ?>"><?php endif; ?>
             <label>Display name <input name="display_name" autocomplete="name" value="<?= htmlspecialchars((string) ($old['display_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label>
+            <label>Username <input name="username" autocomplete="username" required pattern="[a-z0-9_]{3,30}" minlength="3" maxlength="30" title="3–30 characters: lowercase letters, numbers, or underscore" value="<?= htmlspecialchars((string) ($old['username'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label>
             <label>Email <input name="email" type="email" autocomplete="email" required value="<?= htmlspecialchars((string) ($old['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label>
             <label>Password <input name="password" type="password" autocomplete="new-password" required></label>
             <button class="button button--primary" type="submit">Create account</button>

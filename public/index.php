@@ -60,27 +60,27 @@ $router->get('/login', static function (): void {
 });
 
 $router->post('/account/login', static function () use ($api, $cookieDomain, $worldUrl): void {
-    $email = normalizeEmail($_POST['email'] ?? null);
+    $identifier = normalizeLoginIdentifier($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
     $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
 
-    if ($email === null || $password === '') {
+    if ($identifier === null || $password === '') {
         renderPage('Log in', 'account/login.php', [
             'identity' => null,
             'worldUrl' => $worldUrl,
-            'error' => 'Email and password are required.',
+            'error' => 'Email or username and password are required.',
             'return_to' => $returnTo,
             'old' => formOld(['email']),
         ], 400);
         return;
     }
 
-    $result = $api->login($email, $password);
+    $result = $api->login($identifier, $password);
     if (!$result['ok'] || !isset($result['token'], $result['expires_at'])) {
         renderPage('Log in', 'account/login.php', [
             'identity' => null,
             'worldUrl' => $worldUrl,
-            'error' => 'Invalid email or password.',
+            'error' => 'Invalid login or password.',
             'return_to' => $returnTo,
             'old' => formOld(['email']),
         ], 401);
@@ -92,27 +92,27 @@ $router->post('/account/login', static function () use ($api, $cookieDomain, $wo
 });
 
 $router->post('/login', static function () use ($api, $cookieDomain, $worldUrl): void {
-    $email = normalizeEmail($_POST['email'] ?? null);
+    $identifier = normalizeLoginIdentifier($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
     $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
 
-    if ($email === null || $password === '') {
+    if ($identifier === null || $password === '') {
         renderPage('Log in', 'account/login.php', [
             'identity' => null,
             'worldUrl' => $worldUrl,
-            'error' => 'Email and password are required.',
+            'error' => 'Email or username and password are required.',
             'return_to' => $returnTo,
             'old' => formOld(['email']),
         ], 400);
         return;
     }
 
-    $result = $api->login($email, $password);
+    $result = $api->login($identifier, $password);
     if (!$result['ok'] || !isset($result['token'], $result['expires_at'])) {
         renderPage('Log in', 'account/login.php', [
             'identity' => null,
             'worldUrl' => $worldUrl,
-            'error' => 'Invalid email or password.',
+            'error' => 'Invalid login or password.',
             'return_to' => $returnTo,
             'old' => formOld(['email']),
         ], 401);
@@ -144,28 +144,32 @@ $router->post('/account/register', static function () use ($api, $cookieDomain, 
     $email = normalizeEmail($_POST['email'] ?? null);
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
     $displayName = cleanOptionalString($_POST['display_name'] ?? null);
+    $username = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
     $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
 
-    if ($email === null || $password === '') {
+    if ($email === null || $password === '' || $username === '') {
         renderPage('Create account', 'account/register.php', [
             'identity' => null,
             'worldUrl' => $worldUrl,
-            'error' => 'Email and password are required.',
+            'error' => 'Email, username, and password are required.',
             'return_to' => $returnTo,
-            'old' => formOld(['display_name', 'email']),
+            'old' => formOld(['display_name', 'email', 'username']),
         ], 400);
         return;
     }
 
-    $register = $api->register($email, $password, $displayName);
+    $register = $api->register($email, $password, $displayName, $username);
     if (!$register['ok']) {
+        $error = is_string($register['error'] ?? null) && $register['error'] !== ''
+            ? $register['error']
+            : ($register['status'] === 409 ? 'An account already exists for that email.' : 'Unable to create account.');
         renderPage('Create account', 'account/register.php', [
             'identity' => null,
             'worldUrl' => $worldUrl,
-            'error' => $register['status'] === 409 ? 'An account already exists for that email.' : 'Unable to create account.',
+            'error' => $error,
             'return_to' => $returnTo,
-            'old' => formOld(['display_name', 'email']),
-        ], $register['status'] === 409 ? 409 : 500);
+            'old' => formOld(['display_name', 'email', 'username']),
+        ], $register['status'] >= 400 && $register['status'] < 500 ? $register['status'] : 500);
         return;
     }
 
@@ -249,6 +253,28 @@ $router->post('/account/caldav-tokens/revoke', static function () use ($api): vo
 
     $revoked = $api->revokeDavToken($token, $davTokenId);
     Response::redirect('/account?' . ($revoked ? 'notice=dav_token_revoked' : 'error=dav_token_revoke_failed') . '#caldav');
+});
+
+$router->post('/account/username', static function () use ($api, $config, $worldUrl): void {
+    $token = authToken();
+    $identity = $token === null ? null : $api->me($token);
+    if ($identity === null || $token === null) {
+        Response::redirect('/account/login');
+        return;
+    }
+
+    $username = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
+    $result = $api->setUsername($token, $username);
+
+    renderPage('Account', 'account/account.php', [
+        'identity' => $result['ok'] ? $api->me($token) : $identity,
+        'worldUrl' => $worldUrl,
+        'error' => $result['ok'] ? null : ($result['error'] ?? 'Unable to update username.'),
+        'notice' => $result['ok'] ? 'Username updated.' : null,
+        'davTokens' => $api->davTokens($token),
+        'davToken' => null,
+        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
+    ], $result['ok'] ? 200 : ($result['status'] >= 400 && $result['status'] < 500 ? $result['status'] : 500));
 });
 
 $router->get('/investors', static function () use ($api, $worldUrl): void {
@@ -403,6 +429,20 @@ function normalizeEmail(mixed $email): ?string
 
     $email = strtolower(trim($email));
     return filter_var($email, FILTER_VALIDATE_EMAIL) === false ? null : $email;
+}
+
+/**
+ * A login identifier may be an email or a username - the API resolves either -
+ * so this only trims and lower-cases, it does not require an email shape.
+ */
+function normalizeLoginIdentifier(mixed $value): ?string
+{
+    if (!is_string($value)) {
+        return null;
+    }
+
+    $value = strtolower(trim($value));
+    return $value === '' ? null : $value;
 }
 
 function cleanOptionalString(mixed $value): ?string

@@ -23,6 +23,15 @@ function cleanOptionalString(mixed $value): ?string
     return $value === '' ? null : $value;
 }
 
+function normalizeLoginIdentifier(mixed $value): ?string
+{
+    if (!is_string($value)) {
+        return null;
+    }
+    $value = strtolower(trim($value));
+    return $value === '' ? null : $value;
+}
+
 function allowedReturnTo(mixed $value): ?string
 {
     if (!is_string($value) || trim($value) === '') {
@@ -151,6 +160,12 @@ test('cleanOptionalString: blank returns null', fn () => cleanOptionalString('  
 test('cleanOptionalString: trims value', fn () => cleanOptionalString('  hello  ') === 'hello');
 test('cleanOptionalString: non-string returns null', fn () => cleanOptionalString(true) === null);
 test('cleanOptionalString: integer returns null', fn () => cleanOptionalString(0) === null);
+
+// normalizeLoginIdentifier
+test('normalizeLoginIdentifier: passes through a username', fn () => normalizeLoginIdentifier('Lonn_H') === 'lonn_h');
+test('normalizeLoginIdentifier: passes through an email', fn () => normalizeLoginIdentifier('  Me@Example.com ') === 'me@example.com');
+test('normalizeLoginIdentifier: empty returns null', fn () => normalizeLoginIdentifier('   ') === null);
+test('normalizeLoginIdentifier: non-string returns null', fn () => normalizeLoginIdentifier(42) === null);
 
 // allowedReturnTo
 test('allowedReturnTo: null returns null', fn () => allowedReturnTo(null) === null);

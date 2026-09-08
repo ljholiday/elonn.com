@@ -15,7 +15,7 @@ $isPartial = isset($currentTemplate) && $currentTemplate === 'home.php';
         <?php if (is_string($error)): ?><p class="account-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
         <form class="account-form" method="post" action="/account/login">
             <?php if ($returnTo !== null): ?><input type="hidden" name="return_to" value="<?= htmlspecialchars($returnTo, ENT_QUOTES, 'UTF-8') ?>"><?php endif; ?>
-            <label>Email <input name="email" type="email" autocomplete="email" required value="<?= htmlspecialchars((string) ($old['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label>
+            <label>Email or username <input name="email" type="text" autocomplete="username" required value="<?= htmlspecialchars((string) ($old['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label>
             <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
             <button class="button button--primary" type="submit">Log in</button>
         </form>

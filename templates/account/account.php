@@ -12,6 +12,8 @@ $notice = is_string($data['notice'] ?? null) ? $data['notice'] : null;
     <section class="account-panel" aria-labelledby="account-title">
         <p class="eyebrow">Elonn Account</p>
         <h1 id="account-title">Account</h1>
+        <?php if ($error !== null): ?><p class="account-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+        <?php if ($notice !== null): ?><p class="account-notice"><?= htmlspecialchars($notice, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
         <div class="account-details">
             <div><span>ID</span><strong><?= htmlspecialchars((string) ($identity['id'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></div>
             <div><span>Email</span><strong><?= htmlspecialchars((string) ($identity['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></div>
@@ -21,12 +23,22 @@ $notice = is_string($data['notice'] ?? null) ? $data['notice'] : null;
             <button class="button" type="submit">Log out</button>
         </form>
     </section>
+    <section class="account-panel" id="username" aria-labelledby="username-title">
+        <p class="eyebrow">Identity</p>
+        <h2 id="username-title">Username</h2>
+        <p class="account-copy">Your username signs you in and is how others mention you. 3&ndash;30 characters: lowercase letters, numbers, or underscore.</p>
+        <form class="account-form" method="post" action="/account/username">
+            <label>
+                Username
+                <input name="username" value="<?= htmlspecialchars((string) ($identity['username'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" pattern="[a-z0-9_]{3,30}" minlength="3" maxlength="30" autocomplete="username" required>
+            </label>
+            <button class="button button--primary" type="submit"><?= ($identity['username'] ?? null) ? 'Update username' : 'Set username' ?></button>
+        </form>
+    </section>
     <section class="account-panel account-panel--wide" id="caldav" aria-labelledby="caldav-title">
         <p class="eyebrow">Connected calendars</p>
         <h2 id="caldav-title">CalDAV</h2>
         <p class="account-copy">Create a separate CalDAV password for each calendar app.</p>
-        <?php if ($error !== null): ?><p class="account-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-        <?php if ($notice !== null): ?><p class="account-notice"><?= htmlspecialchars($notice, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
         <?php if ($davToken !== null): ?>
             <section class="caldav-secret" aria-labelledby="caldav-secret-title">
                 <h3 id="caldav-secret-title">New CalDAV password</h3>

@@ -14,24 +14,41 @@ final class ApiClient
     /**
      * @return array{ok: bool, status: int, token?: string, expires_at?: string, error?: string}
      */
-    public function register(string $email, string $password, ?string $displayName): array
+    public function register(string $email, string $password, ?string $displayName, string $username): array
     {
         return $this->jsonPost('/identity/register', [
             'email' => $email,
             'password' => $password,
             'display_name' => $displayName,
+            'username' => $username,
         ]);
     }
 
     /**
      * @return array{ok: bool, status: int, token?: string, expires_at?: string, error?: string}
      */
-    public function login(string $email, string $password): array
+    public function login(string $identifier, string $password): array
     {
         return $this->jsonPost('/identity/login', [
-            'email' => $email,
+            'identifier' => $identifier,
             'password' => $password,
         ]);
+    }
+
+    /**
+     * @return array{ok: bool, status: int, username?: string, error?: string}
+     */
+    public function setUsername(string $token, string $username): array
+    {
+        $response = $this->request('POST', '/identity/username', ['username' => $username], $token);
+        $json = is_array($response['json']) ? $response['json'] : [];
+
+        return [
+            'ok' => $response['status'] === 200,
+            'status' => $response['status'],
+            'username' => is_string($json['username'] ?? null) ? $json['username'] : null,
+            'error' => is_string($json['error'] ?? null) ? $json['error'] : null,
+        ];
     }
 
     /**
