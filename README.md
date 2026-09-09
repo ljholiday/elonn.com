@@ -2,7 +2,7 @@
 
 Elonn is a multi-service platform built around shared identity and runtime composition.
 
-This repository is `elonn.com` — the company's front page and public/business home. It handles login, registration, account state, logout, and the handoff into the runtime shell, and it's also where marketing, funding, and other public/business content live. No other repo is appropriate for that content; the one carve-out is `docs.elonn.local`, the separate user-facing help site. This repo does not own identity data.
+This repository is `elonn.com` — the company's **public information pages only**: home, investors, contact, privacy, terms, and other marketing / business content. It links out to the Runtimes; it has **no** identity or member code — no login, register, account, logout, or CalDAV surface, and no `ApiClient`. Members sign in from a Runtime, which renders `api.elonn`'s login screen (`decision.member_surface_consolidation_20260908`). The one content carve-out is `docs.elonn.local`, the separate user-facing help site.
 
 ## Service map
 
@@ -19,48 +19,23 @@ This repository is `elonn.com` — the company's front page and public/business 
 
 ## What lives here
 
-- public account surface
-- login and registration routes
-- account and logout flow
-- CalDAV connection settings
-- environment-aware handoff into `web.elonn`
+- home, investors, contact (with a working contact form), privacy, terms
+- links out to the Runtimes (currently `web.elonn`)
 - marketing, funding, and other public/business content (e.g. `entrepreneur/`)
-
-## Current stack flow
-
-1. A user visits `elonn.local` or `elonn.com`
-2. Login and registration post to `api.elonn`
-3. `api.elonn` sets the shared auth token
-4. `web.elonn` sends a Runtime-World Call to `world.elonn`
-5. `world.elonn` normally forwards a World-Mind Call to `mind.elonn`; `world.restore` is the explicit saved-state exception
-6. `mind.elonn` selects one enabled Service operation, currently including Find for web search, Maps for field/place/geographic work, and Paint or other configured Services when enabled
-7. The selected Service returns a canonical Service Dataset through Mind and World
-8. `web.elonn` renders the returned World Dataset without calling downstream Services directly
 
 ## Routes
 
 ```text
 GET /
-GET /.well-known/caldav
-GET /account/login
-POST /account/login
-GET /login
-POST /login
-GET /account/register
-POST /account/register
-GET /start
-GET /account
-POST /account/caldav-tokens
-POST /account/caldav-tokens/revoke
 GET /investors
 GET /contact
 POST /contact
 GET /privacy
 GET /terms
-POST /account/logout
 ```
 
-The landing page uses progressive enhancement. The account routes must still work without JavaScript.
+The pages must work without JavaScript. To sign in, a visitor opens a Runtime (the
+"Open Elonn Web" link) and authenticates there.
 
 ## Configuration
 
@@ -72,13 +47,11 @@ Important keys:
 APP_ENV=
 APP_DEBUG=
 APP_URL=
-ELONN_API_BASE_URL=
-ELONN_COOKIE_DOMAIN=
 ELONN_WEB_URL=
-ELONN_TIME_URL=
 ELONN_CONTACT_EMAIL=
 ```
 
+`ELONN_WEB_URL` is the browser Runtime the "Open Elonn Web" links point at.
 `ELONN_CONTACT_EMAIL` is where the `/contact` form's submissions are sent (via PHP's `mail()`); defaults to `hello@elonn.com`.
 
 `ELONN_SERVICES_URL` and the retired shared services host are no longer active. CalDAV should point at `time.elonn.com/dav/`.

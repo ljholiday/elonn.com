@@ -1,7 +1,6 @@
 <?php
 /** @var array<string, mixed> $data */
-$identity = $data['identity'] ?? null;
-$worldUrl = (string) ($data['worldUrl'] ?? '#');
+$webUrl = (string) ($data['webUrl'] ?? '#');
 ?>
 <main>
     <section class="hero" aria-labelledby="hero-title">
@@ -14,7 +13,7 @@ $worldUrl = (string) ($data['worldUrl'] ?? '#');
             </p>
             <div class="actions" aria-label="Primary actions">
                 <a class="button button--primary" href="/contact?topic=investing">Get in touch</a>
-                <a class="button" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
+                <a class="button" href="<?= htmlspecialchars($webUrl, ENT_QUOTES, 'UTF-8') ?>">Open Elonn Web</a>
             </div>
         </div>
     </section>

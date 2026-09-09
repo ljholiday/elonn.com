@@ -2,8 +2,7 @@
 /** @var string $title */
 /** @var string $template */
 /** @var array<string, mixed> $data */
-/** @var array{id: string, email: string, display_name: string|null}|null $identity */
-/** @var string $worldUrl */
+/** @var string $webUrl */
 $currentTemplate = $template;
 $pageDescription = 'Elonn helps you find things everywhere: real-world places, internet information, and social activity, in one place, built toward XR headsets.';
 $pageUrl = 'https://elonn.com/';
@@ -43,14 +42,8 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
             <span>Elonn</span>
         </a>
         <nav class="nav" aria-label="Primary navigation">
-            <?php if ($identity === null): ?>
-                <a href="/account/login" data-auth-open="login">Log in</a>
-                <a href="/account/register" data-auth-open="register">Create account</a>
-            <?php else: ?>
-                <a href="/account">Account</a>
-            <?php endif; ?>
             <a href="https://docs.elonn.com">Documentation</a>
-            <a class="nav__cta" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
+            <a class="nav__cta" href="<?= htmlspecialchars($webUrl, ENT_QUOTES, 'UTF-8') ?>">Open Elonn Web</a>
         </nav>
     </header>
 
@@ -62,7 +55,7 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
             <span>Find real-world, internet, and social information.</span>
         </div>
         <nav aria-label="Footer">
-            <a href="/account">Account</a>
+            <a href="<?= htmlspecialchars($webUrl, ENT_QUOTES, 'UTF-8') ?>">Open Elonn Web</a>
             <a href="https://docs.elonn.com">Documentation</a>
             <a href="/investors">Investors</a>
             <a href="/contact">Contact</a>
@@ -71,6 +64,5 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
         </nav>
     </footer>
 
-    <script src="/assets/js/elonn.js" defer></script>
 </body>
 </html>

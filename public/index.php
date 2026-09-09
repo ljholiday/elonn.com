@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Elonn\Site\ApiClient;
 use Elonn\Site\Response;
 use Elonn\Site\Router;
 use Elonn\Site\View;
@@ -17,277 +16,29 @@ $config = require BASE_PATH . '/config/config.php';
 
 redirectToHttps($config['app']['url']);
 
-$apiBaseUrl = $config['services']['api_base_url'];
-$cookieDomain = $config['auth']['cookie_domain'];
-$worldUrl = $config['products']['world_url'];
+// elonn.com is public information pages only -- home, investors, contact, privacy, terms -- and
+// links out to the Runtimes. It owns no identity or member state: no login, no register, no
+// account, no ApiClient (decision.member_surface_consolidation_20260908). Members sign in from
+// a Runtime, which renders api.elonn's login screen.
+$webUrl = $config['products']['web_url'];
 $contactTo = $config['contact']['to'];
-$api = new ApiClient($apiBaseUrl);
 $router = new Router();
 
-$router->get('/', static function () use ($api, $worldUrl): void {
+$router->get('/', static function () use ($webUrl): void {
     renderPage('Elonn', 'home.php', [
-        'identity' => currentIdentity($api),
-        'worldUrl' => $worldUrl,
-        'error' => errorMessage($_GET['error'] ?? null),
+        'webUrl' => $webUrl,
     ]);
 });
 
-$router->get('/.well-known/caldav', static function () use ($config): void {
-    http_response_code(301);
-    header('Location: ' . rtrim(productUrl($config, 'time'), '/') . '/dav/');
-});
-
-$router->get('/account/login', static function () use ($api, $worldUrl): void {
-    $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
-    $identity = currentIdentity($api);
-    if ($identity !== null) {
-        Response::redirect($returnTo ?? $worldUrl);
-        return;
-    }
-
-    renderPage('Log in', 'account/login.php', [
-        'identity' => null,
-        'worldUrl' => $worldUrl,
-        'error' => errorMessage($_GET['error'] ?? null),
-        'return_to' => $returnTo,
-        'old' => [],
-    ]);
-});
-
-$router->get('/login', static function (): void {
-    $query = $_SERVER['QUERY_STRING'] ?? '';
-    Response::redirect('/account/login' . (is_string($query) && $query !== '' ? '?' . $query : ''));
-});
-
-$router->post('/account/login', static function () use ($api, $cookieDomain, $worldUrl): void {
-    $identifier = normalizeLoginIdentifier($_POST['email'] ?? null);
-    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
-    $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
-
-    if ($identifier === null || $password === '') {
-        renderPage('Log in', 'account/login.php', [
-            'identity' => null,
-            'worldUrl' => $worldUrl,
-            'error' => 'Email or username and password are required.',
-            'return_to' => $returnTo,
-            'old' => formOld(['email']),
-        ], 400);
-        return;
-    }
-
-    $result = $api->login($identifier, $password);
-    if (!$result['ok'] || !isset($result['token'], $result['expires_at'])) {
-        renderPage('Log in', 'account/login.php', [
-            'identity' => null,
-            'worldUrl' => $worldUrl,
-            'error' => 'Invalid login or password.',
-            'return_to' => $returnTo,
-            'old' => formOld(['email']),
-        ], 401);
-        return;
-    }
-
-    setAuthCookie($result['token'], $result['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? $worldUrl);
-});
-
-$router->post('/login', static function () use ($api, $cookieDomain, $worldUrl): void {
-    $identifier = normalizeLoginIdentifier($_POST['email'] ?? null);
-    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
-    $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
-
-    if ($identifier === null || $password === '') {
-        renderPage('Log in', 'account/login.php', [
-            'identity' => null,
-            'worldUrl' => $worldUrl,
-            'error' => 'Email or username and password are required.',
-            'return_to' => $returnTo,
-            'old' => formOld(['email']),
-        ], 400);
-        return;
-    }
-
-    $result = $api->login($identifier, $password);
-    if (!$result['ok'] || !isset($result['token'], $result['expires_at'])) {
-        renderPage('Log in', 'account/login.php', [
-            'identity' => null,
-            'worldUrl' => $worldUrl,
-            'error' => 'Invalid login or password.',
-            'return_to' => $returnTo,
-            'old' => formOld(['email']),
-        ], 401);
-        return;
-    }
-
-    setAuthCookie($result['token'], $result['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? $worldUrl);
-});
-
-$router->get('/account/register', static function () use ($api, $worldUrl): void {
-    $returnTo = allowedReturnTo($_GET['return_to'] ?? null);
-    $identity = currentIdentity($api);
-    if ($identity !== null) {
-        Response::redirect($returnTo ?? $worldUrl);
-        return;
-    }
-
-    renderPage('Create account', 'account/register.php', [
-        'identity' => null,
-        'worldUrl' => $worldUrl,
-        'error' => errorMessage($_GET['error'] ?? null),
-        'return_to' => $returnTo,
-        'old' => [],
-    ]);
-});
-
-$router->post('/account/register', static function () use ($api, $cookieDomain, $worldUrl): void {
-    $email = normalizeEmail($_POST['email'] ?? null);
-    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
-    $displayName = cleanOptionalString($_POST['display_name'] ?? null);
-    $username = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
-    $returnTo = allowedReturnTo($_POST['return_to'] ?? null);
-
-    if ($email === null || $password === '' || $username === '') {
-        renderPage('Create account', 'account/register.php', [
-            'identity' => null,
-            'worldUrl' => $worldUrl,
-            'error' => 'Email, username, and password are required.',
-            'return_to' => $returnTo,
-            'old' => formOld(['display_name', 'email', 'username']),
-        ], 400);
-        return;
-    }
-
-    $register = $api->register($email, $password, $displayName, $username);
-    if (!$register['ok']) {
-        $error = is_string($register['error'] ?? null) && $register['error'] !== ''
-            ? $register['error']
-            : ($register['status'] === 409 ? 'An account already exists for that email.' : 'Unable to create account.');
-        renderPage('Create account', 'account/register.php', [
-            'identity' => null,
-            'worldUrl' => $worldUrl,
-            'error' => $error,
-            'return_to' => $returnTo,
-            'old' => formOld(['display_name', 'email', 'username']),
-        ], $register['status'] >= 400 && $register['status'] < 500 ? $register['status'] : 500);
-        return;
-    }
-
-    $login = $api->login($email, $password);
-    if (!$login['ok'] || !isset($login['token'], $login['expires_at'])) {
-        Response::redirect('/account/login');
-        return;
-    }
-
-    setAuthCookie($login['token'], $login['expires_at'], $cookieDomain);
-    Response::redirect($returnTo ?? $worldUrl);
-});
-
-$router->get('/start', static function () use ($api, $config, $worldUrl): void {
-    $identity = currentIdentity($api);
-    if ($identity === null) {
-        Response::redirect('/account/login?return_to=' . rawurlencode('/start'));
-        return;
-    }
-
-    renderPage('Elonn Start', 'start.php', [
-        'identity' => $identity,
-        'worldUrl' => $worldUrl,
-        'timeUrl' => productUrl($config, 'time'),
-        'error' => null,
-    ]);
-});
-
-$router->get('/account', static function () use ($api, $config, $worldUrl): void {
-    $token = authToken();
-    $identity = $token === null ? null : $api->me($token);
-    if ($identity === null || $token === null) {
-        Response::redirect('/account/login');
-        return;
-    }
-
-    renderPage('Account', 'account/account.php', [
-        'identity' => $identity,
-        'worldUrl' => $worldUrl,
-        'error' => accountMessage($_GET['error'] ?? null),
-        'notice' => accountMessage($_GET['notice'] ?? null),
-        'davTokens' => $api->davTokens($token),
-        'davToken' => null,
-        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
-    ]);
-});
-
-$router->post('/account/caldav-tokens', static function () use ($api, $config, $worldUrl): void {
-    $token = authToken();
-    $identity = $token === null ? null : $api->me($token);
-    if ($identity === null || $token === null) {
-        Response::redirect('/account/login');
-        return;
-    }
-
-    $label = cleanOptionalString($_POST['label'] ?? null);
-    $result = $api->createDavToken($token, $label);
-    renderPage('Account', 'account/account.php', [
-        'identity' => $identity,
-        'worldUrl' => $worldUrl,
-        'error' => $result['ok'] ? null : 'Unable to create a CalDAV password.',
-        'notice' => null,
-        'davTokens' => $api->davTokens($token),
-        'davToken' => $result['ok'] ? $result['token'] : null,
-        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
-    ], $result['ok'] ? 201 : 500);
-});
-
-$router->post('/account/caldav-tokens/revoke', static function () use ($api): void {
-    $token = authToken();
-    if ($token === null) {
-        Response::redirect('/account/login');
-        return;
-    }
-
-    $davTokenId = positiveInt($_POST['token_id'] ?? null);
-    if ($davTokenId === null) {
-        Response::redirect('/account?error=invalid_dav_token#caldav');
-        return;
-    }
-
-    $revoked = $api->revokeDavToken($token, $davTokenId);
-    Response::redirect('/account?' . ($revoked ? 'notice=dav_token_revoked' : 'error=dav_token_revoke_failed') . '#caldav');
-});
-
-$router->post('/account/username', static function () use ($api, $config, $worldUrl): void {
-    $token = authToken();
-    $identity = $token === null ? null : $api->me($token);
-    if ($identity === null || $token === null) {
-        Response::redirect('/account/login');
-        return;
-    }
-
-    $username = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
-    $result = $api->setUsername($token, $username);
-
-    renderPage('Account', 'account/account.php', [
-        'identity' => $result['ok'] ? $api->me($token) : $identity,
-        'worldUrl' => $worldUrl,
-        'error' => $result['ok'] ? null : ($result['error'] ?? 'Unable to update username.'),
-        'notice' => $result['ok'] ? 'Username updated.' : null,
-        'davTokens' => $api->davTokens($token),
-        'davToken' => null,
-        'davUrl' => rtrim(productUrl($config, 'time'), '/') . '/dav/',
-    ], $result['ok'] ? 200 : ($result['status'] >= 400 && $result['status'] < 500 ? $result['status'] : 500));
-});
-
-$router->get('/investors', static function () use ($api, $worldUrl): void {
+$router->get('/investors', static function () use ($webUrl): void {
     renderPage('For Investors', 'investors.php', [
-        'identity' => currentIdentity($api),
-        'worldUrl' => $worldUrl,
+        'webUrl' => $webUrl,
     ]);
 });
 
-$router->get('/contact', static function () use ($api, $worldUrl): void {
+$router->get('/contact', static function () use ($webUrl): void {
     renderPage('Contact', 'contact.php', [
-        'identity' => currentIdentity($api),
-        'worldUrl' => $worldUrl,
+        'webUrl' => $webUrl,
         'notice' => contactMessage($_GET['notice'] ?? null),
         'error' => contactMessage($_GET['error'] ?? null),
         'topic' => cleanOptionalString($_GET['topic'] ?? null) ?? 'general',
@@ -295,7 +46,7 @@ $router->get('/contact', static function () use ($api, $worldUrl): void {
     ]);
 });
 
-$router->post('/contact', static function () use ($api, $worldUrl, $contactTo): void {
+$router->post('/contact', static function () use ($webUrl, $contactTo): void {
     // Honeypot: real visitors never fill this hidden field.
     if (cleanOptionalString($_POST['company'] ?? null) !== null) {
         Response::redirect('/contact?notice=sent');
@@ -309,8 +60,7 @@ $router->post('/contact', static function () use ($api, $worldUrl, $contactTo): 
 
     if ($name === null || $email === null || $message === null) {
         renderPage('Contact', 'contact.php', [
-            'identity' => currentIdentity($api),
-            'worldUrl' => $worldUrl,
+            'webUrl' => $webUrl,
             'notice' => null,
             'error' => 'Name, email, and a message are all required.',
             'topic' => $topic,
@@ -322,8 +72,7 @@ $router->post('/contact', static function () use ($api, $worldUrl, $contactTo): 
     $sent = sendContactMessage($contactTo, $name, $email, $topic, $message);
     if (!$sent) {
         renderPage('Contact', 'contact.php', [
-            'identity' => currentIdentity($api),
-            'worldUrl' => $worldUrl,
+            'webUrl' => $webUrl,
             'notice' => null,
             'error' => 'Something went wrong sending that. Please try again, or email hello@elonn.com directly.',
             'topic' => $topic,
@@ -335,10 +84,9 @@ $router->post('/contact', static function () use ($api, $worldUrl, $contactTo): 
     Response::redirect('/contact?notice=sent');
 });
 
-$router->get('/privacy', static function () use ($api, $worldUrl): void {
+$router->get('/privacy', static function () use ($webUrl): void {
     renderPage('Privacy', 'legal.php', [
-        'identity' => currentIdentity($api),
-        'worldUrl' => $worldUrl,
+        'webUrl' => $webUrl,
         'heading' => 'Privacy',
         'body' => [
             'Elonn uses account information to operate identity, account access, and connected product services.',
@@ -348,10 +96,9 @@ $router->get('/privacy', static function () use ($api, $worldUrl): void {
     ]);
 });
 
-$router->get('/terms', static function () use ($api, $worldUrl): void {
+$router->get('/terms', static function () use ($webUrl): void {
     renderPage('Terms', 'legal.php', [
-        'identity' => currentIdentity($api),
-        'worldUrl' => $worldUrl,
+        'webUrl' => $webUrl,
         'heading' => 'Terms',
         'body' => [
             'Use Elonn services responsibly and only with accounts you control.',
@@ -359,16 +106,6 @@ $router->get('/terms', static function () use ($api, $worldUrl): void {
             'For service questions, contact hello@elonn.com.',
         ],
     ]);
-});
-
-$router->post('/account/logout', static function () use ($api, $cookieDomain): void {
-    $token = authToken();
-    if ($token !== null) {
-        $api->logout($token);
-    }
-
-    clearAuthCookie($cookieDomain);
-    Response::redirect('/account/login');
 });
 
 $router->dispatch(
@@ -385,40 +122,8 @@ function renderPage(string $title, string $template, array $data, int $status = 
         'title' => $title,
         'template' => $template,
         'data' => $data,
-        'identity' => $data['identity'] ?? null,
-        'worldUrl' => $data['worldUrl'] ?? '#',
+        'webUrl' => $data['webUrl'] ?? '#',
     ], $status);
-}
-
-/**
- * @param array{products: array<string, string>} $config
- */
-function productUrl(array $config, string $product): string
-{
-    return match ($product) {
-        'time' => $config['products']['time_url'] ?? '#',
-        default => '#',
-    };
-}
-
-function authToken(): ?string
-{
-    $token = $_COOKIE['elonn_api_token'] ?? null;
-    if (!is_string($token)) {
-        return null;
-    }
-
-    $token = trim($token);
-    return $token === '' ? null : $token;
-}
-
-/**
- * @return array{id: string, email: string, display_name: string|null}|null
- */
-function currentIdentity(ApiClient $api): ?array
-{
-    $token = authToken();
-    return $token === null ? null : $api->me($token);
 }
 
 function normalizeEmail(mixed $email): ?string
@@ -429,20 +134,6 @@ function normalizeEmail(mixed $email): ?string
 
     $email = strtolower(trim($email));
     return filter_var($email, FILTER_VALIDATE_EMAIL) === false ? null : $email;
-}
-
-/**
- * A login identifier may be an email or a username - the API resolves either -
- * so this only trims and lower-cases, it does not require an email shape.
- */
-function normalizeLoginIdentifier(mixed $value): ?string
-{
-    if (!is_string($value)) {
-        return null;
-    }
-
-    $value = strtolower(trim($value));
-    return $value === '' ? null : $value;
 }
 
 function cleanOptionalString(mixed $value): ?string
@@ -468,70 +159,6 @@ function formOld(array $keys): array
     }
 
     return $old;
-}
-
-function setAuthCookie(string $token, string $expiresAt, string $domain): void
-{
-    setcookie('elonn_api_token', $token, [
-        'expires' => strtotime($expiresAt) ?: 0,
-        'path' => '/',
-        'domain' => $domain,
-        'secure' => isHttps(),
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
-}
-
-function clearAuthCookie(string $domain): void
-{
-    setcookie('elonn_api_token', '', [
-        'expires' => time() - 3600,
-        'path' => '/',
-        'domain' => $domain,
-        'secure' => isHttps(),
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
-}
-
-function allowedReturnTo(mixed $value): ?string
-{
-    if (!is_string($value) || trim($value) === '') {
-        return null;
-    }
-
-    $value = trim($value);
-    if (isLocalRedirectPath($value)) {
-        return $value;
-    }
-
-    $parts = parse_url($value);
-    if (!is_array($parts)) {
-        return null;
-    }
-
-    $scheme = strtolower((string) ($parts['scheme'] ?? ''));
-    $host = strtolower((string) ($parts['host'] ?? ''));
-    if (!in_array($scheme, ['http', 'https'], true)) {
-        return null;
-    }
-
-    return in_array($host, [
-        'elonn.local',
-        'api.elonn.local',
-        'time.elonn.local',
-        'web.elonn.local',
-        'world.elonn.local',
-        'social.elonn.local',
-        'admin.elonn.local',
-        'elonn.com',
-        'api.elonn.com',
-        'time.elonn.com',
-        'web.elonn.com',
-        'world.elonn.com',
-        'social.elonn.com',
-        'admin.elonn.com',
-    ], true) ? $value : null;
 }
 
 function isHttps(): bool
@@ -604,28 +231,6 @@ function isLoopbackHost(string $host): bool
         || $isLoopbackIpv4;
 }
 
-function errorMessage(mixed $error): ?string
-{
-    return match ($error) {
-        'missing_fields' => 'Email and password are required.',
-        'invalid_login' => 'Invalid email or password.',
-        'user_exists' => 'An account already exists for that email.',
-        'register_failed' => 'Unable to create account.',
-        'login_failed' => 'Unable to log in.',
-        default => null,
-    };
-}
-
-function accountMessage(mixed $message): ?string
-{
-    return match ($message) {
-        'invalid_dav_token' => 'Valid CalDAV password id is required.',
-        'dav_token_revoke_failed' => 'Unable to revoke the CalDAV password.',
-        'dav_token_revoked' => 'CalDAV password revoked.',
-        default => null,
-    };
-}
-
 function contactMessage(mixed $message): ?string
 {
     return match ($message) {
@@ -648,14 +253,4 @@ function sendContactMessage(string $to, string $name, string $email, string $top
     $headers = "From: Elonn Contact Form <noreply@elonn.com>\r\nReply-To: {$email}\r\n";
 
     return mail($to, $subject, $body, $headers);
-}
-
-function positiveInt(mixed $value): ?int
-{
-    if (!is_numeric($value)) {
-        return null;
-    }
-
-    $value = (int) $value;
-    return $value > 0 ? $value : null;
 }

@@ -1,8 +1,6 @@
 <?php
 /** @var array<string, mixed> $data */
-$identity = $data['identity'] ?? null;
-$worldUrl = (string) ($data['worldUrl'] ?? '#');
-$error = $data['error'] ?? null;
+$webUrl = (string) ($data['webUrl'] ?? '#');
 ?>
 <main>
     <section class="hero" aria-labelledby="hero-title">
@@ -14,11 +12,8 @@ $error = $data['error'] ?? null;
                 Real-world places, the web, and your social world &mdash; in a single experience, not a folder of separate apps. Elonn is built to run wherever you are today, and to carry straight through to the lightweight XR headsets coming next. Try it now in your browser.
             </p>
             <div class="actions" aria-label="Primary actions">
-                <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
-                <?php if ($identity === null): ?>
-                    <a class="button" href="/account/register" data-auth-open="register">Create account</a>
-                    <a class="button" href="/account/login" data-auth-open="login">Log in</a>
-                <?php endif; ?>
+                <a class="button button--primary" href="<?= htmlspecialchars($webUrl, ENT_QUOTES, 'UTF-8') ?>">Open Elonn Web</a>
+                <span class="button button--muted" aria-disabled="true">XR headset build — coming soon</span>
             </div>
         </div>
     </section>
@@ -55,22 +50,22 @@ $error = $data['error'] ?? null;
             <h2 id="runtime-status-title">Real software you can use today, with a lot more on the way.</h2>
         </div>
         <ul>
-            <li><strong>Web demo</strong><span>Try Elonn in a browser and explore the information we're connecting.</span></li>
+            <li><strong>Web</strong><span>Open Elonn in a browser and explore the information we're connecting.</span></li>
             <li><strong>XR direction</strong><span>Every runtime we build proves out the same platform underneath &mdash; the foundation for headsets that make information visible in the world around you.</span></li>
-            <li><strong>Shared account</strong><span>One Elonn identity will work across every runtime we bring online.</span></li>
+            <li><strong>Shared account</strong><span>One Elonn identity works across every runtime we bring online.</span></li>
         </ul>
     </section>
 
     <section class="access" id="access" aria-labelledby="access-title">
         <div>
-            <p class="eyebrow">Web demo</p>
+            <p class="eyebrow">Web</p>
             <h2 id="access-title">Start in the browser.</h2>
         </div>
         <div>
             <p>
-                The web demo is the easiest way to try Elonn now. Create an account to get started &mdash; the same identity will carry across every runtime as we bring them online.
+                The web app is the easiest way to try Elonn now. Open it and sign in to get started &mdash; the same identity will carry across every runtime as we bring them online.
             </p>
-            <a class="button button--primary" href="<?= htmlspecialchars($worldUrl, ENT_QUOTES, 'UTF-8') ?>">Try Web Demo</a>
+            <a class="button button--primary" href="<?= htmlspecialchars($webUrl, ENT_QUOTES, 'UTF-8') ?>">Open Elonn Web</a>
         </div>
     </section>
 
@@ -82,8 +77,3 @@ $error = $data['error'] ?? null;
         </p>
     </section>
 </main>
-
-<?php if ($identity === null): ?>
-    <?php require __DIR__ . '/account/login.php'; ?>
-    <?php require __DIR__ . '/account/register.php'; ?>
-<?php endif; ?>

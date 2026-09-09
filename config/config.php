@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 $local = str_contains((string) ($_SERVER['HTTP_HOST'] ?? ''), 'elonn.local');
 
+// Public information pages only. No identity/member config -- elonn.com does not talk to
+// api.elonn (decision.member_surface_consolidation_20260908); it links out to the Runtimes.
 return [
     'app' => [
         'environment' => site_string_config('APP_ENV', 'production'),
         'debug' => site_bool_config('APP_DEBUG', false),
         'url' => rtrim(site_string_config('APP_URL', $local ? 'https://elonn.local' : 'https://elonn.com'), '/'),
     ],
-    'auth' => [
-        'cookie_domain' => site_string_config('ELONN_COOKIE_DOMAIN', $local ? '.elonn.local' : '.elonn.com'),
-    ],
     'contact' => [
         'to' => site_string_config('ELONN_CONTACT_EMAIL', 'hello@elonn.com'),
     ],
-    'services' => [
-        'api_base_url' => rtrim(site_string_config('ELONN_API_BASE_URL', $local ? 'https://api.elonn.local' : 'https://api.elonn.com'), '/'),
-    ],
     'products' => [
-        'world_url' => site_string_config('ELONN_WEB_URL', $local ? 'https://web.elonn.local/' : 'https://web.elonn.com/'),
-        'time_url' => site_string_config('ELONN_TIME_URL', $local ? 'https://time.elonn.local/' : 'https://time.elonn.com/'),
+        'web_url' => site_string_config('ELONN_WEB_URL', $local ? 'https://web.elonn.local/' : 'https://web.elonn.com/'),
     ],
 ];
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Pure-function tests for elonn.local.
+// Pure-function tests for elonn.local (public information pages only).
 // Functions reproduced from public/index.php for isolation.
 
 function normalizeEmail(mixed $email): ?string
@@ -21,41 +21,6 @@ function cleanOptionalString(mixed $value): ?string
     }
     $value = trim($value);
     return $value === '' ? null : $value;
-}
-
-function normalizeLoginIdentifier(mixed $value): ?string
-{
-    if (!is_string($value)) {
-        return null;
-    }
-    $value = strtolower(trim($value));
-    return $value === '' ? null : $value;
-}
-
-function allowedReturnTo(mixed $value): ?string
-{
-    if (!is_string($value) || trim($value) === '') {
-        return null;
-    }
-    $value = trim($value);
-    if (isLocalRedirectPath($value)) {
-        return $value;
-    }
-    $parts = parse_url($value);
-    if (!is_array($parts)) {
-        return null;
-    }
-    $scheme = strtolower((string) ($parts['scheme'] ?? ''));
-    $host   = strtolower((string) ($parts['host'] ?? ''));
-    if (!in_array($scheme, ['http', 'https'], true)) {
-        return null;
-    }
-    return in_array($host, [
-        'elonn.local', 'api.elonn.local', 'time.elonn.local',
-        'web.elonn.local', 'world.elonn.local', 'social.elonn.local', 'admin.elonn.local',
-        'elonn.com', 'api.elonn.com', 'time.elonn.com', 'web.elonn.com',
-        'world.elonn.com', 'social.elonn.com', 'admin.elonn.com',
-    ], true) ? $value : null;
 }
 
 function isLocalRedirectPath(string $value): bool
@@ -106,15 +71,11 @@ function isLoopbackHost(string $host): bool
         || $isLoopbackIpv4;
 }
 
-function errorMessage(mixed $error): ?string
+function contactMessage(mixed $message): ?string
 {
-    return match ($error) {
-        'missing_fields'  => 'Email and password are required.',
-        'invalid_login'   => 'Invalid email or password.',
-        'user_exists'     => 'An account already exists for that email.',
-        'register_failed' => 'Unable to create account.',
-        'login_failed'    => 'Unable to log in.',
-        default           => null,
+    return match ($message) {
+        'sent' => 'Thanks — we\'ll be in touch soon.',
+        default => null,
     };
 }
 
@@ -161,48 +122,33 @@ test('cleanOptionalString: trims value', fn () => cleanOptionalString('  hello  
 test('cleanOptionalString: non-string returns null', fn () => cleanOptionalString(true) === null);
 test('cleanOptionalString: integer returns null', fn () => cleanOptionalString(0) === null);
 
-// normalizeLoginIdentifier
-test('normalizeLoginIdentifier: passes through a username', fn () => normalizeLoginIdentifier('Lonn_H') === 'lonn_h');
-test('normalizeLoginIdentifier: passes through an email', fn () => normalizeLoginIdentifier('  Me@Example.com ') === 'me@example.com');
-test('normalizeLoginIdentifier: empty returns null', fn () => normalizeLoginIdentifier('   ') === null);
-test('normalizeLoginIdentifier: non-string returns null', fn () => normalizeLoginIdentifier(42) === null);
-
-// allowedReturnTo
-test('allowedReturnTo: null returns null', fn () => allowedReturnTo(null) === null);
-test('allowedReturnTo: empty string returns null', fn () => allowedReturnTo('') === null);
-test('allowedReturnTo: whitespace returns null', fn () => allowedReturnTo('  ') === null);
-test('allowedReturnTo: relative path allowed', fn () => allowedReturnTo('/dashboard') === '/dashboard');
-test('allowedReturnTo: root path allowed', fn () => allowedReturnTo('/') === '/');
-test('allowedReturnTo: protocol-relative URL blocked', fn () => allowedReturnTo('//evil.com/path') === null);
-test('allowedReturnTo: encoded protocol-relative URL blocked', fn () => allowedReturnTo('/%2fevil.com/path') === null);
-test('allowedReturnTo: backslash host variant blocked', fn () => allowedReturnTo('/\\evil.com/path') === null);
-test('allowedReturnTo: elonn.local host allowed', fn () => allowedReturnTo('https://elonn.local/') === 'https://elonn.local/');
-test('allowedReturnTo: api.elonn.local allowed', fn () => allowedReturnTo('https://api.elonn.local/path') === 'https://api.elonn.local/path');
-test('allowedReturnTo: time.elonn.com allowed', fn () => allowedReturnTo('https://time.elonn.com/path') === 'https://time.elonn.com/path');
-test('allowedReturnTo: external host blocked', fn () => allowedReturnTo('https://evil.com/') === null);
-test('allowedReturnTo: ftp scheme blocked', fn () => allowedReturnTo('ftp://elonn.com/') === null);
-test('allowedReturnTo: http scheme allowed', fn () => allowedReturnTo('http://elonn.local/') === 'http://elonn.local/');
+// isLocalRedirectPath
+test('isLocalRedirectPath: relative path allowed', fn () => isLocalRedirectPath('/contact') === true);
+test('isLocalRedirectPath: root allowed', fn () => isLocalRedirectPath('/') === true);
+test('isLocalRedirectPath: protocol-relative blocked', fn () => isLocalRedirectPath('//evil.com') === false);
+test('isLocalRedirectPath: backslash blocked', fn () => isLocalRedirectPath('/\\evil.com') === false);
+test('isLocalRedirectPath: non-absolute blocked', fn () => isLocalRedirectPath('contact') === false);
 
 // safeHttpsRedirectTarget
 test('safeHttpsRedirectTarget: allowed production host preserved', function () {
     $_SERVER['HTTP_HOST'] = 'elonn.com';
-    $_SERVER['REQUEST_URI'] = '/account?x=1';
+    $_SERVER['REQUEST_URI'] = '/contact?x=1';
 
-    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/account?x=1';
+    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/contact?x=1';
 });
 
 test('safeHttpsRedirectTarget: localhost host preserved', function () {
     $_SERVER['HTTP_HOST'] = 'localhost:8080';
-    $_SERVER['REQUEST_URI'] = '/account';
+    $_SERVER['REQUEST_URI'] = '/contact';
 
-    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://localhost:8080/account';
+    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://localhost:8080/contact';
 });
 
 test('safeHttpsRedirectTarget: unknown host falls back to canonical', function () {
     $_SERVER['HTTP_HOST'] = 'preview.example.test';
-    $_SERVER['REQUEST_URI'] = '/account';
+    $_SERVER['REQUEST_URI'] = '/contact';
 
-    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/account';
+    return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/contact';
 });
 
 test('safeHttpsRedirectTarget: unsafe request URI falls back to root path', function () {
@@ -212,15 +158,10 @@ test('safeHttpsRedirectTarget: unsafe request URI falls back to root path', func
     return safeHttpsRedirectTarget('https://elonn.com', ['elonn.com']) === 'https://elonn.com/';
 });
 
-// errorMessage
-test('errorMessage: missing_fields', fn () => errorMessage('missing_fields') === 'Email and password are required.');
-test('errorMessage: invalid_login', fn () => errorMessage('invalid_login') === 'Invalid email or password.');
-test('errorMessage: user_exists', fn () => errorMessage('user_exists') === 'An account already exists for that email.');
-test('errorMessage: register_failed', fn () => errorMessage('register_failed') === 'Unable to create account.');
-test('errorMessage: login_failed', fn () => errorMessage('login_failed') === 'Unable to log in.');
-test('errorMessage: unknown key returns null', fn () => errorMessage('unknown') === null);
-test('errorMessage: null returns null', fn () => errorMessage(null) === null);
-test('errorMessage: integer returns null', fn () => errorMessage(0) === null);
+// contactMessage
+test('contactMessage: sent', fn () => contactMessage('sent') === 'Thanks — we\'ll be in touch soon.');
+test('contactMessage: unknown key returns null', fn () => contactMessage('unknown') === null);
+test('contactMessage: null returns null', fn () => contactMessage(null) === null);
 
 
 echo "\nPassed: $passed  Failed: $failed\n";
