@@ -42,7 +42,7 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
             <span>Elonn</span>
         </a>
         <nav class="nav" aria-label="Primary navigation">
-            <a href="https://docs.elonn.com">Documentation</a>
+            <a href="https://docs.elonn.com">Docs</a>
             <a class="nav__cta" href="<?= htmlspecialchars($webUrl, ENT_QUOTES, 'UTF-8') ?>">Open Elonn Web</a>
         </nav>
     </header>
@@ -56,7 +56,7 @@ $shareImage = 'https://elonn.com/assets/img/elonn-logo.png';
         </div>
         <nav aria-label="Footer">
             <a href="<?= htmlspecialchars($webUrl, ENT_QUOTES, 'UTF-8') ?>">Open Elonn Web</a>
-            <a href="https://docs.elonn.com">Documentation</a>
+            <a href="https://docs.elonn.com">Docs</a>
             <a href="/investors">Investors</a>
             <a href="/contact">Contact</a>
             <a href="/privacy">Privacy</a>
