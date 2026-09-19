@@ -97,9 +97,8 @@ find public src templates -name '*.php' -print0 | xargs -0 -n1 php -l
 ## Local URLs
 
 - `http://elonn.local/`
-- `http://elonn.local/account/login`
-- `http://elonn.local/account/register`
-- `http://elonn.local/account`
+- `https://api.elonn.local/identity/login` (member login)
+- `https://api.elonn.local/identity/register` (member registration)
 - `http://elonn.local/start`
 - `http://elonn.local/investors`
 - `http://elonn.local/contact`
@@ -109,9 +108,8 @@ find public src templates -name '*.php' -print0 | xargs -0 -n1 php -l
 ## Production URLs
 
 - `https://elonn.com/`
-- `https://elonn.com/account/login`
-- `https://elonn.com/account/register`
-- `https://elonn.com/account`
+- `https://api.elonn.com/identity/login` (member login)
+- `https://api.elonn.com/identity/register` (member registration)
 - `https://elonn.com/start`
 - `https://elonn.com/investors`
 - `https://elonn.com/contact`
