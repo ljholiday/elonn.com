@@ -1,6 +1,11 @@
 # Universal Agent Guidelines
 - Prefer clarity and pragmatism over cleverness.
 
+## Project memory and local Agents data
+- Follow the parent workspace `AGENTS.md` requirement to read the authenticated `https://agents.elonn.com/api/project-memory` endpoint before Elonn work and record real work through its online API.
+- All real project memory belongs in `agents.elonn.com`. Never write, import, copy, seed, or synchronize production data or real project-memory records into the local Agents database.
+- `agents.elonn.local` is for application development and development/test data only. Never connect it to a production database, including through an SSH tunnel, and never import production database dumps. If the online memory API fails, stop; do not fall back to the local app or database.
+
 ## Terminology
 - `../dev.elonn.local/public/terminology/glossary.xml` is the canonical machine-readable terminology reference.
 - Do not use terms, identifiers, route names, payload keys, or UI copy that contradict it.
